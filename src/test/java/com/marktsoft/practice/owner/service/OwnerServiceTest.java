@@ -1,8 +1,8 @@
-package com.marktsoft.practice.service;
+package com.marktsoft.practice.owner.service;
 
-import com.marktsoft.practice.domain.Owner;
-import com.marktsoft.practice.dto.OwnerDTO;
-import com.marktsoft.practice.repository.OwnerRepository;
+import com.marktsoft.practice.owner.domain.Owner;
+import com.marktsoft.practice.owner.dto.OwnerDTO;
+import com.marktsoft.practice.owner.repository.OwnerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -80,12 +80,12 @@ public class OwnerServiceTest {
     }
 
     private Owner createOwner(OwnerDTO ownerDTO) {
-        Owner owner = new Owner();
-        owner.setName(ownerDTO.getName());
-        owner.setId(ID);
-        owner.setEmail(ownerDTO.getEmail());
-        owner.setPhoneNumber(ownerDTO.getPhoneNumber());
-        return owner;
+        return Owner.builder()
+                .name(ownerDTO.getName())
+                .id(ID)
+                .email(ownerDTO.getEmail())
+                .phoneNumber(ownerDTO.getPhoneNumber())
+                .build();
     }
 
     private OwnerDTO createOwnerDTO() {
@@ -105,11 +105,12 @@ public class OwnerServiceTest {
     }
 
     private Owner createOwner() {
-        Owner owner = new Owner();
-        owner.setName(NAME);
-        owner.setId(ID);
-        owner.setEmail(EMAIL);
-        owner.setPhoneNumber(PHONE_NUMBER);
-        return owner;
+        return Owner
+                .builder()
+                .name(NAME)
+                .id(ID)
+                .email(EMAIL)
+                .phoneNumber(PHONE_NUMBER)
+                .build();
     }
 }

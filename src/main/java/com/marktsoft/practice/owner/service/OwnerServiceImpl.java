@@ -1,13 +1,17 @@
-package com.marktsoft.practice.service;
+package com.marktsoft.practice.owner.service;
 
-import com.marktsoft.practice.domain.Owner;
-import com.marktsoft.practice.dto.OwnerDTO;
-import com.marktsoft.practice.repository.OwnerRepository;
+import com.marktsoft.practice.owner.domain.Owner;
+import com.marktsoft.practice.owner.dto.OwnerDTO;
+import com.marktsoft.practice.owner.repository.OwnerRepository;
+import com.marktsoft.practice.pet.domain.Pet;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -22,15 +26,26 @@ public class OwnerServiceImpl implements OwnerService {
         log.info("Fetching owners");
         return ownerList
                 .stream()
-                .map(owner -> new OwnerDTO(owner.getName(), owner.getPhoneNumber(),owner.getEmail())).toList();
+                .map(owner -> OwnerDTO.builder()
+                        .name(owner.getName())
+                        .phoneNumber(owner.getPhoneNumber())
+                        .email(owner.getEmail()).build())
+                .toList();
+    }
+
+    @Override
+    public Owner findOwnerById(Long id) {
+        return ownerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Owner with id: " + id + "not found"));
     }
 
     @Override
     public OwnerDTO createOwner(OwnerDTO ownerDTO) {
-        Owner owner = new Owner();
-        owner.setName(ownerDTO.getName());
-        owner.setEmail(ownerDTO.getEmail());
-        owner.setPhoneNumber(ownerDTO.getPhoneNumber());
+        Owner owner = Owner.builder()
+                .name(ownerDTO.getName())
+                .email(ownerDTO.getEmail())
+                .phoneNumber(ownerDTO.getPhoneNumber())
+                .build();
         log.info("Saving owner");
         ownerRepository.save(owner);
 
@@ -56,5 +71,13 @@ public class OwnerServiceImpl implements OwnerService {
         owner.setPet(null);
         log.info("deleting owner");
         ownerRepository.delete(owner);
+    }
+
+    @Override
+    public void updateOwnerWithPet(Owner owner, Pet pet) {
+        List<Pet> petList = new ArrayList<>();
+        petList.add(pet);
+        owner.setPet(petList);
+        ownerRepository.save(owner);
     }
 }

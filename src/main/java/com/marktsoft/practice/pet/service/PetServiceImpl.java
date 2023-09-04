@@ -1,10 +1,10 @@
-package com.marktsoft.practice.service;
+package com.marktsoft.practice.pet.service;
 
-import com.marktsoft.practice.domain.Owner;
-import com.marktsoft.practice.domain.Pet;
-import com.marktsoft.practice.dto.PetDTO;
-import com.marktsoft.practice.repository.OwnerRepository;
-import com.marktsoft.practice.repository.PetRepository;
+import com.marktsoft.practice.owner.domain.Owner;
+import com.marktsoft.practice.owner.service.OwnerService;
+import com.marktsoft.practice.pet.domain.Pet;
+import com.marktsoft.practice.pet.dto.PetDTO;
+import com.marktsoft.practice.pet.repository.PetRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class PetServiceImpl implements PetService {
 
     private PetRepository petRepository;
 
-    private OwnerRepository ownerRepository;
+    private OwnerService ownerService;
 
     @Override
     public List<PetDTO> findAllPets() {
@@ -26,19 +26,26 @@ public class PetServiceImpl implements PetService {
         log.info("Fetching all pets");
         return petList
                 .stream()
-                .map(pet -> new PetDTO(pet.getSpecies(), pet.getName())).toList();
+                .map(pet -> PetDTO.builder()
+                        .species(pet.getSpecies())
+                        .name(pet.getName())
+                        .build())
+                .toList();
     }
 
     @Override
     public PetDTO createPet(Long id, PetDTO petDTO) {
-        Owner owner = ownerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Owner with id: " + id + "not found"));
-        Pet pet = new Pet();
-        pet.setName(petDTO.getName());
-        pet.setSpecies(petDTO.getSpecies());
-        pet.setOwner(owner);
-        log.info("saving pet");
+        Owner owner = ownerService.findOwnerById(id);
+        Pet pet = Pet.builder()
+                .name(petDTO.getName())
+                .species(petDTO.getSpecies())
+                .owner(owner)
+                .build();
         petRepository.save(pet);
+        owner.setPet(List.of(pet));
+        log.info("Updating owner");
+        ownerService.updateOwnerWithPet(owner, pet);
+        log.info("saving pet");
         return petDTO;
     }
 

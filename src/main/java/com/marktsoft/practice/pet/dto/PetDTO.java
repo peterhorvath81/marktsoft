@@ -1,12 +1,14 @@
-package com.marktsoft.practice.dto;
+package com.marktsoft.practice.pet.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PetDTO {
 
     private String species;

@@ -1,11 +1,11 @@
-package com.marktsoft.practice.service;
+package com.marktsoft.practice.pet.service;
 
-import com.marktsoft.practice.domain.Owner;
-import com.marktsoft.practice.domain.Pet;
-import com.marktsoft.practice.dto.PetDTO;
-import com.marktsoft.practice.repository.OwnerRepository;
-import com.marktsoft.practice.repository.PetRepository;
-import org.junit.jupiter.api.Assertions;
+import com.marktsoft.practice.owner.domain.Owner;
+import com.marktsoft.practice.owner.service.OwnerService;
+import com.marktsoft.practice.pet.domain.Pet;
+import com.marktsoft.practice.pet.dto.PetDTO;
+import com.marktsoft.practice.owner.repository.OwnerRepository;
+import com.marktsoft.practice.pet.repository.PetRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,8 +15,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.List;
 import java.util.Optional;
 
-import static com.marktsoft.practice.service.OwnerServiceTest.EMAIL;
-import static com.marktsoft.practice.service.OwnerServiceTest.PHONE_NUMBER;
+import static com.marktsoft.practice.owner.service.OwnerServiceTest.EMAIL;
+import static com.marktsoft.practice.owner.service.OwnerServiceTest.PHONE_NUMBER;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
@@ -30,7 +30,7 @@ public class PetServiceTest {
     private PetRepository petRepository;
 
     @Mock
-    private OwnerRepository ownerRepository;
+    private OwnerService ownerService;
 
     @InjectMocks
     private PetServiceImpl petService;
@@ -57,7 +57,7 @@ public class PetServiceTest {
         Owner owner = createOwner();
         PetDTO petDTO = createPetDTO(pet);
 
-        when(ownerRepository.findById(ID)).thenReturn(Optional.of(owner));
+        when(ownerService.findOwnerById(ID)).thenReturn(owner);
         pet.setOwner(owner);
         when(petRepository.save(pet)).thenReturn(pet);
 
@@ -81,7 +81,6 @@ public class PetServiceTest {
 
     @Test
     public void shouldDeletePet() {
-        Owner owner = createOwner();
         doNothing().when(petRepository).deleteById(ID);
 
         petService.deletePet(ID);
@@ -104,19 +103,21 @@ public class PetServiceTest {
     }
 
     private Pet createPet() {
-        Pet pet = new Pet();
-        pet.setId(ID);
-        pet.setSpecies(SPECIES);
-        pet.setName(NAME);
-        return pet;
+        return Pet
+                .builder()
+                .id(ID)
+                .species(SPECIES)
+                .name(NAME)
+                .build();
     }
 
     private Owner createOwner() {
-        Owner owner = new Owner();
-        owner.setName(NAME);
-        owner.setId(ID);
-        owner.setEmail(EMAIL);
-        owner.setPhoneNumber(PHONE_NUMBER);
-        return owner;
+        return Owner
+                .builder()
+                .name(NAME)
+                .id(ID)
+                .email(EMAIL)
+                .phoneNumber(PHONE_NUMBER)
+                .build();
     }
 }

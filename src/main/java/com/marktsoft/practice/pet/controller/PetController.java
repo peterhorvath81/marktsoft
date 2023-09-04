@@ -1,7 +1,7 @@
-package com.marktsoft.practice.controller;
+package com.marktsoft.practice.pet.controller;
 
-import com.marktsoft.practice.dto.PetDTO;
-import com.marktsoft.practice.service.PetService;
+import com.marktsoft.practice.pet.dto.PetDTO;
+import com.marktsoft.practice.pet.service.PetService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

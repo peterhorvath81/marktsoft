@@ -1,6 +1,6 @@
-package com.marktsoft.practice.service;
+package com.marktsoft.practice.pet.service;
 
-import com.marktsoft.practice.dto.PetDTO;
+import com.marktsoft.practice.pet.dto.PetDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

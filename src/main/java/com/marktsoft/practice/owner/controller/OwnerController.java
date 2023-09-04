@@ -1,7 +1,8 @@
-package com.marktsoft.practice.controller;
+package com.marktsoft.practice.owner.controller;
 
-import com.marktsoft.practice.dto.OwnerDTO;
-import com.marktsoft.practice.service.OwnerService;
+import com.marktsoft.practice.owner.dto.OwnerDTO;
+import com.marktsoft.practice.owner.service.OwnerService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public class OwnerController {
     }
 
     @PostMapping("owner")
-    public ResponseEntity<OwnerDTO> registerOwner(@RequestBody OwnerDTO ownerDTO) {
+    public ResponseEntity<OwnerDTO> registerOwner(@Valid @RequestBody OwnerDTO ownerDTO) {
         return new ResponseEntity<>(ownerService.createOwner(ownerDTO), HttpStatus.OK);
     }
 

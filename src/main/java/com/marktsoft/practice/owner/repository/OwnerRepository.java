@@ -1,6 +1,6 @@
-package com.marktsoft.practice.repository;
+package com.marktsoft.practice.owner.repository;
 
-import com.marktsoft.practice.domain.Owner;
+import com.marktsoft.practice.owner.domain.Owner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

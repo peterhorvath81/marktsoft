@@ -1,20 +1,21 @@
-package com.marktsoft.practice.domain;
+package com.marktsoft.practice.owner.domain;
 
+import com.marktsoft.practice.pet.domain.Pet;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "owner")
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Owner {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="owner_id")
     private Long id;
 
     private String name;
@@ -23,6 +24,6 @@ public class Owner {
 
     private String email;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(cascade = CascadeType.ALL)
     private List<Pet> pet;
 }
