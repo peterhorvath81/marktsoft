@@ -1,4 +1,4 @@
-package com.marktsoft.practice.owner.dto;
+package com.marktsoft.practice.owner.controller.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

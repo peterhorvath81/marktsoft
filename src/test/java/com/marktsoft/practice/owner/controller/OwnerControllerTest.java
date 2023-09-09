@@ -1,7 +1,8 @@
 package com.marktsoft.practice.owner.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.marktsoft.practice.owner.dto.OwnerDTO;
+import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
+import com.marktsoft.practice.owner.controller.dto.OwnerResponseDTO;
 import com.marktsoft.practice.owner.service.OwnerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,8 @@ public class OwnerControllerTest {
     @Test
     public void shouldRegisterOwner() throws Exception {
         OwnerDTO ownerDTO = createOwnerDTO();
-        when(ownerService.createOwner(ownerDTO)).thenReturn(ownerDTO);
+        OwnerResponseDTO ownerResponseDTO = createOwnerResponseDTO();
+        when(ownerService.createOwner(ownerDTO)).thenReturn(ownerResponseDTO);
 
         mockMvc.perform(post("/api/owner").contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(ownerDTO)))
@@ -58,7 +60,8 @@ public class OwnerControllerTest {
     public void shouldUpdateOwner() throws Exception {
         OwnerDTO ownerDTO = createOwnerDTO();
         ownerDTO.setName("Jack Doe");
-        when(ownerService.updateOwner(ID, ownerDTO)).thenReturn(ownerDTO);
+        OwnerResponseDTO ownerResponseDTO = createOwnerResponseDTO();
+        when(ownerService.updateOwner(ID, ownerDTO)).thenReturn(ownerResponseDTO);
 
         mockMvc.perform(put("/api/owner/{id}", ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,5 +83,12 @@ public class OwnerControllerTest {
         ownerDTO.setEmail(EMAIL);
         ownerDTO.setPhoneNumber(PHONE_NUMBER);
         return ownerDTO;
+    }
+
+    private OwnerResponseDTO createOwnerResponseDTO() {
+        OwnerResponseDTO ownerResponseDTO = new OwnerResponseDTO();
+        ownerResponseDTO.setId(ID);
+        ownerResponseDTO.setName(NAME);
+        return ownerResponseDTO;
     }
 }

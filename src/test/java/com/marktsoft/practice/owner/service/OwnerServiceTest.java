@@ -1,7 +1,8 @@
 package com.marktsoft.practice.owner.service;
 
-import com.marktsoft.practice.owner.domain.Owner;
-import com.marktsoft.practice.owner.dto.OwnerDTO;
+import com.marktsoft.practice.owner.controller.dto.OwnerResponseDTO;
+import com.marktsoft.practice.owner.service.domain.Owner;
+import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
 import com.marktsoft.practice.owner.repository.OwnerRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,23 +49,25 @@ public class OwnerServiceTest {
     public void shouldCreateOwner() {
         OwnerDTO ownerDTO = createOwnerDTO();
         Owner owner = createOwner(ownerDTO);
+        OwnerResponseDTO ownerResponseDTO = createOwnerResponseDTO();
         when(ownerRepository.save(owner)).thenReturn(owner);
 
-        OwnerDTO result = ownerService.createOwner(ownerDTO);
+        OwnerResponseDTO result = ownerService.createOwner(ownerDTO);
 
-        assertEquals(result, ownerDTO);
+        assertEquals(result, ownerResponseDTO);
     }
 
     @Test
     public void shouldUpdateOwner() {
         OwnerDTO ownerDTO = createOwnerDTO();
         Owner owner = createOwner(ownerDTO);
+        OwnerResponseDTO ownerResponseDTO = createOwnerResponseDTOforUpdate();
         when(ownerRepository.findById(ID)).thenReturn(Optional.of(owner));
         when(ownerRepository.save(owner)).thenReturn(owner);
 
-        OwnerDTO result = ownerService.updateOwner(ID, ownerDTO);
+        OwnerResponseDTO result = ownerService.updateOwner(ID, ownerDTO);
 
-        assertEquals(result, ownerDTO);
+        assertEquals(result, ownerResponseDTO);
     }
 
     @Test
@@ -112,5 +115,19 @@ public class OwnerServiceTest {
                 .email(EMAIL)
                 .phoneNumber(PHONE_NUMBER)
                 .build();
+    }
+    private OwnerResponseDTO createOwnerResponseDTO() {
+        OwnerResponseDTO ownerResponseDTO = new OwnerResponseDTO();
+        ownerResponseDTO.setName(NAME);
+        ownerResponseDTO.setEmail(EMAIL);
+        return ownerResponseDTO;
+    }
+
+    private OwnerResponseDTO createOwnerResponseDTOforUpdate() {
+        OwnerResponseDTO ownerResponseDTO = new OwnerResponseDTO();
+        ownerResponseDTO.setId(ID);
+        ownerResponseDTO.setName(NAME);
+        ownerResponseDTO.setEmail(EMAIL);
+        return ownerResponseDTO;
     }
 }

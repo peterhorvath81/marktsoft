@@ -1,17 +1,16 @@
 package com.marktsoft.practice.owner.service;
 
-import com.marktsoft.practice.owner.domain.Owner;
-import com.marktsoft.practice.owner.dto.OwnerDTO;
+import com.marktsoft.practice.owner.controller.dto.OwnerResponseDTO;
+import com.marktsoft.practice.owner.service.domain.Owner;
+import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
 import com.marktsoft.practice.owner.repository.OwnerRepository;
-import com.marktsoft.practice.pet.domain.Pet;
+import com.marktsoft.practice.pet.service.domain.Pet;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -40,7 +39,7 @@ public class OwnerServiceImpl implements OwnerService {
     }
 
     @Override
-    public OwnerDTO createOwner(OwnerDTO ownerDTO) {
+    public OwnerResponseDTO createOwner(OwnerDTO ownerDTO) {
         Owner owner = Owner.builder()
                 .name(ownerDTO.getName())
                 .email(ownerDTO.getEmail())
@@ -49,11 +48,15 @@ public class OwnerServiceImpl implements OwnerService {
         log.info("Saving owner");
         ownerRepository.save(owner);
 
-        return ownerDTO;
+        return OwnerResponseDTO.builder()
+                .id(owner.getId())
+                .name(owner.getName())
+                .email(owner.getEmail())
+                .build();
     }
 
     @Override
-    public OwnerDTO updateOwner(Long id, OwnerDTO ownerDTO) {
+    public OwnerResponseDTO updateOwner(Long id, OwnerDTO ownerDTO) {
         Owner owner = ownerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("The owner with the id " +id+ "not found"));
         owner.setName(ownerDTO.getName());
@@ -61,7 +64,11 @@ public class OwnerServiceImpl implements OwnerService {
         owner.setPhoneNumber(ownerDTO.getPhoneNumber());
         log.info("Updating owner");
         ownerRepository.save(owner);
-        return ownerDTO;
+        return OwnerResponseDTO.builder()
+                .id(owner.getId())
+                .name(owner.getName())
+                .email(owner.getEmail())
+                .build();
     }
 
     @Override

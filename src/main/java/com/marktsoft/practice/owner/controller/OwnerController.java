@@ -1,11 +1,10 @@
 package com.marktsoft.practice.owner.controller;
 
-import com.marktsoft.practice.owner.dto.OwnerDTO;
+import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
+import com.marktsoft.practice.owner.controller.dto.OwnerResponseDTO;
 import com.marktsoft.practice.owner.service.OwnerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,23 +17,23 @@ public class OwnerController {
     private OwnerService ownerService;
 
     @GetMapping("owner")
-    public ResponseEntity<List<OwnerDTO>> getAllOwners() {
-        return new ResponseEntity<>(ownerService.getAllOwner(), HttpStatus.OK);
+    public List<OwnerDTO> getAllOwners() {
+        return ownerService.getAllOwner();
     }
 
     @PostMapping("owner")
-    public ResponseEntity<OwnerDTO> registerOwner(@Valid @RequestBody OwnerDTO ownerDTO) {
-        return new ResponseEntity<>(ownerService.createOwner(ownerDTO), HttpStatus.OK);
+    public OwnerResponseDTO registerOwner(@Valid @RequestBody OwnerDTO ownerDTO) {
+        return ownerService.createOwner(ownerDTO);
     }
 
     @PutMapping("owner/{id}")
-    public ResponseEntity<OwnerDTO> updateOwner(@PathVariable("id") Long id, @RequestBody OwnerDTO ownerDTO) {
-        return new ResponseEntity<>(ownerService.updateOwner(id, ownerDTO), HttpStatus.OK);
+    public OwnerResponseDTO updateOwner(@PathVariable("id") Long id, @RequestBody OwnerDTO ownerDTO) {
+        return ownerService.updateOwner(id, ownerDTO);
     }
 
     @DeleteMapping("owner/{id}")
-    public ResponseEntity<String> deleteOwner(@PathVariable("id") Long id) {
+    public String deleteOwner(@PathVariable("id") Long id) {
         ownerService.deleteOwner(id);
-        return new ResponseEntity<>("Owner deleted with id: "+id, HttpStatus.OK);
+        return "Owner deleted with id: "+id;
     }
 }

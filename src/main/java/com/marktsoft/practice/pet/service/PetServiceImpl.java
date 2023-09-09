@@ -1,9 +1,10 @@
 package com.marktsoft.practice.pet.service;
 
-import com.marktsoft.practice.owner.domain.Owner;
+import com.marktsoft.practice.owner.service.domain.Owner;
 import com.marktsoft.practice.owner.service.OwnerService;
-import com.marktsoft.practice.pet.domain.Pet;
-import com.marktsoft.practice.pet.dto.PetDTO;
+import com.marktsoft.practice.pet.controller.dto.PetResponseDTO;
+import com.marktsoft.practice.pet.service.domain.Pet;
+import com.marktsoft.practice.pet.controller.dto.PetDTO;
 import com.marktsoft.practice.pet.repository.PetRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,30 +35,38 @@ public class PetServiceImpl implements PetService {
     }
 
     @Override
-    public PetDTO createPet(Long id, PetDTO petDTO) {
+    public PetResponseDTO createPet(Long id, PetDTO petDTO) {
         Owner owner = ownerService.findOwnerById(id);
         Pet pet = Pet.builder()
                 .name(petDTO.getName())
                 .species(petDTO.getSpecies())
-                .owner(owner)
+                .practice_owner(owner)
                 .build();
         petRepository.save(pet);
         owner.setPet(List.of(pet));
         log.info("Updating owner");
         ownerService.updateOwnerWithPet(owner, pet);
         log.info("saving pet");
-        return petDTO;
+        return PetResponseDTO.builder()
+                .id(pet.getId())
+                .species(petDTO.getSpecies())
+                .name(pet.getName())
+                .build();
     }
 
     @Override
-    public PetDTO updatePet(Long id, PetDTO petDTO) {
+    public PetResponseDTO updatePet(Long id, PetDTO petDTO) {
         Pet pet = petRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pet with id: " + id + "not found"));
         pet.setName(petDTO.getName());
         pet.setSpecies(petDTO.getSpecies());
         log.info("updating pet");
         petRepository.save(pet);
-        return petDTO;
+        return PetResponseDTO.builder()
+                .id(pet.getId())
+                .species(petDTO.getSpecies())
+                .name(pet.getName())
+                .build();
     }
 
     @Override

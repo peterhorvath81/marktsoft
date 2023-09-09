@@ -1,4 +1,4 @@
-package com.marktsoft.practice.pet.dto;
+package com.marktsoft.practice.pet.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

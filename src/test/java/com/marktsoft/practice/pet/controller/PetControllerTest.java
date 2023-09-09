@@ -1,7 +1,8 @@
 package com.marktsoft.practice.pet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.marktsoft.practice.pet.dto.PetDTO;
+import com.marktsoft.practice.pet.controller.dto.PetDTO;
+import com.marktsoft.practice.pet.controller.dto.PetResponseDTO;
 import com.marktsoft.practice.pet.service.PetService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,8 @@ public class PetControllerTest {
     @Test
     public void shouldRegisterPet() throws Exception {
         PetDTO petDTO = createPetDTO();
-        when(petService.createPet(ID,petDTO)).thenReturn(petDTO);
+        PetResponseDTO petResponseDTO = createPetResponseDTO();
+        when(petService.createPet(ID,petDTO)).thenReturn(petResponseDTO);
 
         mockMvc.perform(post("/api/owner/{id}/pet", ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -59,7 +61,8 @@ public class PetControllerTest {
     public void shouldUpdatePet() throws Exception {
         PetDTO petDTO = createPetDTO();
         petDTO.setName("Terry");
-        when(petService.updatePet(ID,petDTO)).thenReturn(petDTO);
+        PetResponseDTO petResponseDTO = createPetResponseDTO();
+        when(petService.updatePet(ID,petDTO)).thenReturn(petResponseDTO);
 
         mockMvc.perform(put("/api/pet/{id}", ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,5 +83,13 @@ public class PetControllerTest {
         petDTO.setName(NAME);
         petDTO.setSpecies(SPECIES);
         return petDTO;
+    }
+
+    private PetResponseDTO createPetResponseDTO() {
+        PetResponseDTO petResponseDTO = new PetResponseDTO();
+        petResponseDTO.setId(ID);
+        petResponseDTO.setSpecies(SPECIES);
+        petResponseDTO.setName(NAME);
+        return petResponseDTO;
     }
 }

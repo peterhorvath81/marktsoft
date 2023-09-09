@@ -1,6 +1,6 @@
-package com.marktsoft.practice.pet.domain;
+package com.marktsoft.practice.pet.service.domain;
 
-import com.marktsoft.practice.owner.domain.Owner;
+import com.marktsoft.practice.owner.service.domain.Owner;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "pet")
+@Table(name = "practice_pet")
 public class Pet {
 
     @Id
@@ -20,8 +20,9 @@ public class Pet {
 
     private String name;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
-    private Owner owner;
+    private Owner practice_owner;
 
 
 }

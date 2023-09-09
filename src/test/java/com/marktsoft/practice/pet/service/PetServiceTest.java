@@ -1,10 +1,10 @@
 package com.marktsoft.practice.pet.service;
 
-import com.marktsoft.practice.owner.domain.Owner;
+import com.marktsoft.practice.owner.service.domain.Owner;
 import com.marktsoft.practice.owner.service.OwnerService;
-import com.marktsoft.practice.pet.domain.Pet;
-import com.marktsoft.practice.pet.dto.PetDTO;
-import com.marktsoft.practice.owner.repository.OwnerRepository;
+import com.marktsoft.practice.pet.controller.dto.PetResponseDTO;
+import com.marktsoft.practice.pet.service.domain.Pet;
+import com.marktsoft.practice.pet.controller.dto.PetDTO;
 import com.marktsoft.practice.pet.repository.PetRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,27 +56,29 @@ public class PetServiceTest {
         Pet pet = createPet();
         Owner owner = createOwner();
         PetDTO petDTO = createPetDTO(pet);
+        PetResponseDTO petResponseDTO = createPetResponseDTO();
 
         when(ownerService.findOwnerById(ID)).thenReturn(owner);
-        pet.setOwner(owner);
+        pet.setPractice_owner(owner);
         when(petRepository.save(pet)).thenReturn(pet);
 
-        PetDTO result = petService.createPet(ID, petDTO);
+        PetResponseDTO result = petService.createPet(ID, petDTO);
 
-        assertEquals(result, petDTO);
+        assertEquals(result, petResponseDTO);
     }
 
     @Test
     public void shouldUpdatePet() {
         Pet pet = createPet();
         PetDTO petDTO = createPetDTO(pet);
+        PetResponseDTO petResponseDTO = createPetResponseDTOforUpdate();
 
         when(petRepository.findById(ID)).thenReturn(Optional.of(pet));
         when(petRepository.save(pet)).thenReturn(pet);
 
-        PetDTO result = petService.updatePet(ID, petDTO);
+        PetResponseDTO result = petService.updatePet(ID, petDTO);
 
-        assertEquals(result, petDTO);
+        assertEquals(result, petResponseDTO);
     }
 
     @Test
@@ -119,5 +121,20 @@ public class PetServiceTest {
                 .email(EMAIL)
                 .phoneNumber(PHONE_NUMBER)
                 .build();
+    }
+
+    private PetResponseDTO createPetResponseDTO() {
+        PetResponseDTO petResponseDTO = new PetResponseDTO();
+        petResponseDTO.setSpecies(SPECIES);
+        petResponseDTO.setName(NAME);
+        return petResponseDTO;
+    }
+
+    private PetResponseDTO createPetResponseDTOforUpdate() {
+        PetResponseDTO petResponseDTO = new PetResponseDTO();
+        petResponseDTO.setId(ID);
+        petResponseDTO.setSpecies(SPECIES);
+        petResponseDTO.setName(NAME);
+        return petResponseDTO;
     }
 }
