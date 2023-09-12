@@ -1,5 +1,6 @@
 package com.marktsoft.practice.pet.service;
 
+import com.marktsoft.practice.exception.ApiRequestException;
 import com.marktsoft.practice.owner.service.domain.Owner;
 import com.marktsoft.practice.owner.service.OwnerService;
 import com.marktsoft.practice.pet.controller.dto.PetResponseDTO;
@@ -57,7 +58,7 @@ public class PetServiceImpl implements PetService {
     @Override
     public PetResponseDTO updatePet(Long id, PetDTO petDTO) {
         Pet pet = petRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pet with id: " + id + "not found"));
+                .orElseThrow(() -> new ApiRequestException("Pet with id: " + id + " not found"));
         pet.setName(petDTO.getName());
         pet.setSpecies(petDTO.getSpecies());
         log.info("updating pet");
@@ -71,6 +72,8 @@ public class PetServiceImpl implements PetService {
 
     @Override
     public void deletePet(Long id) {
+        petRepository.findById(id)
+                .orElseThrow(() -> new ApiRequestException("Pet with id: " + id + " not found"));
         log.info("deleting pet");
         petRepository.deleteById(id);
     }

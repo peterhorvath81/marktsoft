@@ -1,5 +1,6 @@
 package com.marktsoft.practice.owner.service;
 
+import com.marktsoft.practice.exception.ApiRequestException;
 import com.marktsoft.practice.owner.controller.dto.OwnerResponseDTO;
 import com.marktsoft.practice.owner.service.domain.Owner;
 import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
@@ -35,7 +36,7 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public Owner findOwnerById(Long id) {
         return ownerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Owner with id: " + id + "not found"));
+                .orElseThrow(() -> new ApiRequestException("Owner with id: " + id + " not found"));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public OwnerResponseDTO updateOwner(Long id, OwnerDTO ownerDTO) {
         Owner owner = ownerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("The owner with the id " +id+ "not found"));
+                .orElseThrow(() -> new ApiRequestException("The owner with the id " +id+ " not found"));
         owner.setName(ownerDTO.getName());
         owner.setEmail(ownerDTO.getEmail());
         owner.setPhoneNumber(ownerDTO.getPhoneNumber());
@@ -74,7 +75,7 @@ public class OwnerServiceImpl implements OwnerService {
     @Override
     public void deleteOwner(Long id) {
         Owner owner = ownerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("The owner with the id " +id+ "not found"));
+                .orElseThrow(() -> new ApiRequestException("The owner with the id " +id+ " not found"));
         owner.setPet(null);
         log.info("deleting owner");
         ownerRepository.delete(owner);
