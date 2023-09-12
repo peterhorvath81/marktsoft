@@ -83,6 +83,8 @@ public class PetServiceTest {
 
     @Test
     public void shouldDeletePet() {
+        Pet pet = createPet();
+        when(petRepository.findById(ID)).thenReturn(Optional.ofNullable(pet));
         doNothing().when(petRepository).deleteById(ID);
 
         petService.deletePet(ID);
