@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 
 @AllArgsConstructor
 @Getter
-public class ApiException {
+public class NotFoundException {
 
     private final String message;
 

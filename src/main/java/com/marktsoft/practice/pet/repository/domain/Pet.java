@@ -1,6 +1,6 @@
-package com.marktsoft.practice.pet.service.domain;
+package com.marktsoft.practice.pet.repository.domain;
 
-import com.marktsoft.practice.owner.service.domain.Owner;
+import com.marktsoft.practice.owner.repository.domain.Owner;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,7 +19,6 @@ public class Pet {
     private String species;
 
     private String name;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Owner practice_owner;

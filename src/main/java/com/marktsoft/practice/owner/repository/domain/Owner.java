@@ -1,6 +1,6 @@
-package com.marktsoft.practice.owner.service.domain;
+package com.marktsoft.practice.owner.repository.domain;
 
-import com.marktsoft.practice.pet.service.domain.Pet;
+import com.marktsoft.practice.pet.repository.domain.Pet;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -27,5 +27,5 @@ public class Owner {
     private String email;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "practice_owner")
-    private List<Pet> pet;
+    private List<Pet> pets;
 }

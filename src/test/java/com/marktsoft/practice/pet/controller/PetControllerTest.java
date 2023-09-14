@@ -38,7 +38,7 @@ public class PetControllerTest {
     @Test
     public void shouldGetAllPets() throws Exception {
         PetDTO petDTO = createPetDTO();
-        when(petService.findAllPets()).thenReturn(List.of(petDTO));
+        when(petService.findAll()).thenReturn(List.of(petDTO));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/pet")
@@ -49,9 +49,9 @@ public class PetControllerTest {
     public void shouldRegisterPet() throws Exception {
         PetDTO petDTO = createPetDTO();
         PetResponseDTO petResponseDTO = createPetResponseDTO();
-        when(petService.createPet(ID,petDTO)).thenReturn(petResponseDTO);
+        when(petService.create(ID,petDTO)).thenReturn(petResponseDTO);
 
-        mockMvc.perform(post("/api/owner/{id}/pet", ID)
+        mockMvc.perform(post("/api/pet/owner/{id}", ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(petDTO)))
                 .andExpect(status().isOk());
@@ -62,7 +62,7 @@ public class PetControllerTest {
         PetDTO petDTO = createPetDTO();
         petDTO.setName("Terry");
         PetResponseDTO petResponseDTO = createPetResponseDTO();
-        when(petService.updatePet(ID,petDTO)).thenReturn(petResponseDTO);
+        when(petService.update(ID,petDTO)).thenReturn(petResponseDTO);
 
         mockMvc.perform(put("/api/pet/{id}", ID)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +72,7 @@ public class PetControllerTest {
 
     @Test
     public void shouldDeletePet() throws Exception {
-        doNothing().when(petService).deletePet(ID);
+        doNothing().when(petService).delete(ID);
 
         mockMvc.perform(delete("/api/pet/{id}", ID))
                 .andExpect(status().isOk());

@@ -1,9 +1,11 @@
 package com.marktsoft.practice.owner.service;
 
 import com.marktsoft.practice.owner.controller.dto.OwnerResponseDTO;
-import com.marktsoft.practice.owner.service.domain.Owner;
+import com.marktsoft.practice.owner.repository.domain.Owner;
 import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
-import com.marktsoft.practice.pet.service.domain.Pet;
+import com.marktsoft.practice.pet.repository.domain.Pet;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,15 +13,17 @@ import java.util.List;
 @Service
 public interface OwnerService {
 
-    List<OwnerDTO> getAllOwner();
+    List<OwnerDTO> getAll(Sort sort);
 
-    Owner findOwnerById(Long id);
+    List<OwnerDTO> getAllPaginated(String sortBy, Integer pageNumber, Integer pageCount);
 
-    OwnerResponseDTO createOwner(OwnerDTO ownerDTO);
+    Owner findById(Long id);
 
-    OwnerResponseDTO updateOwner(Long id, OwnerDTO ownerDTO);
+    OwnerResponseDTO create(OwnerDTO ownerDTO);
 
-    void deleteOwner(Long id);
+    OwnerResponseDTO update(Long id, OwnerDTO ownerDTO);
 
-    void updateOwnerWithPet(Owner owner, Pet pet);
+    void delete(Long id);
+
+    void updateWithPet(Owner owner, Pet pet);
 }

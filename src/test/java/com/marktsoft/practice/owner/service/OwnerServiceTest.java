@@ -1,7 +1,7 @@
 package com.marktsoft.practice.owner.service;
 
 import com.marktsoft.practice.owner.controller.dto.OwnerResponseDTO;
-import com.marktsoft.practice.owner.service.domain.Owner;
+import com.marktsoft.practice.owner.repository.domain.Owner;
 import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
 import com.marktsoft.practice.owner.repository.OwnerRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +9,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +28,12 @@ public class OwnerServiceTest {
     public static final String NAME = "John Doe";
     public static final String EMAIL = "johndoe@gmail.com";
     public static final String PHONE_NUMBER = "1234";
+    public static final String SORT_BY = "NAME";
+    public static final String SORT_DIRECTION = "DESC";
+    public static final Integer PAGE_NUMBER = 0;
+    public static final Integer PAGE_COUNT = 1;
+
+
     @Mock
     private OwnerRepository ownerRepository;
 
@@ -36,13 +48,31 @@ public class OwnerServiceTest {
     @Test
     public void shouldGetAllOwners() {
         Owner owner = createOwner();
-        when(ownerRepository.findAll()).thenReturn(List.of(owner));
+
+        Sort sort = Sort.by(SORT_DIRECTION, SORT_BY);
+
+        when(ownerRepository.findAll(sort)).thenReturn(List.of(owner));
 
         OwnerDTO ownerDTO = createOwnerDTO(owner);
 
-        List<OwnerDTO> result = ownerService.getAllOwner();
+        List<OwnerDTO> result = ownerService.getAll(sort);
 
         assertEquals(result, List.of(ownerDTO));
+    }
+
+    @Test
+    public void shouldGetAllOwnersPaginated() {
+        Owner owner = createOwner();
+
+        Page<Owner> ownerPage = mock(Page.class);
+
+        when(ownerRepository.findAll(isA(Pageable.class))).thenReturn(ownerPage);
+
+        OwnerDTO ownerDTO = createOwnerDTO(owner);
+
+        List<OwnerDTO> result = ownerService.getAllPaginated(SORT_BY, PAGE_NUMBER, PAGE_COUNT);
+
+        assertEquals(result, Collections.emptyList());
     }
 
     @Test
@@ -52,7 +82,7 @@ public class OwnerServiceTest {
         OwnerResponseDTO ownerResponseDTO = createOwnerResponseDTO();
         when(ownerRepository.save(owner)).thenReturn(owner);
 
-        OwnerResponseDTO result = ownerService.createOwner(ownerDTO);
+        OwnerResponseDTO result = ownerService.create(ownerDTO);
 
         assertEquals(result, ownerResponseDTO);
     }
@@ -65,7 +95,7 @@ public class OwnerServiceTest {
         when(ownerRepository.findById(ID)).thenReturn(Optional.of(owner));
         when(ownerRepository.save(owner)).thenReturn(owner);
 
-        OwnerResponseDTO result = ownerService.updateOwner(ID, ownerDTO);
+        OwnerResponseDTO result = ownerService.update(ID, ownerDTO);
 
         assertEquals(result, ownerResponseDTO);
     }
@@ -76,7 +106,7 @@ public class OwnerServiceTest {
         when(ownerRepository.findById(ID)).thenReturn(Optional.of(owner));
         doNothing().when(ownerRepository).delete(owner);
 
-        ownerService.deleteOwner(ID);
+        ownerService.delete(ID);
 
         verify(ownerRepository,times(1)).findById(ID);
         verify(ownerRepository, times(1)).delete(owner);

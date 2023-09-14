@@ -9,30 +9,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/pet")
 @AllArgsConstructor
 public class PetController {
 
     private PetService petService;
 
-    @GetMapping("pet")
-    public List<PetDTO> getAllPets() {
-        return petService.findAllPets();
+    @GetMapping
+    public List<PetDTO> getAll() {
+        return petService.findAll();
     }
 
-    @PostMapping("owner/{id}/pet")
-    public PetResponseDTO registerPet(@PathVariable("id") Long id, @RequestBody PetDTO petDTO) {
-        return petService.createPet(id, petDTO);
+    @PostMapping("/owner/{id}")
+    public PetResponseDTO register(@PathVariable("id") Long id, @RequestBody PetDTO petDTO) {
+        return petService.create(id, petDTO);
     }
 
-    @PutMapping("pet/{id}")
-    public PetResponseDTO updatePet(@PathVariable("id") Long id, @RequestBody PetDTO petDTO) {
-        return petService.updatePet(id, petDTO);
+    @PutMapping("/{id}")
+    public PetResponseDTO update(@PathVariable("id") Long id, @RequestBody PetDTO petDTO) {
+        return petService.update(id, petDTO);
     }
 
-    @DeleteMapping("pet/{id}")
-    public String deletePet(@PathVariable("id") Long id) {
-        petService.deletePet(id);
+    @DeleteMapping("/{id}")
+    public String delete(@PathVariable("id") Long id) {
+        petService.delete(id);
         return "Pet deleted with id: " +id;
     }
 }

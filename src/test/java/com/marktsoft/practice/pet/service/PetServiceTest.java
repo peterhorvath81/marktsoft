@@ -1,9 +1,9 @@
 package com.marktsoft.practice.pet.service;
 
-import com.marktsoft.practice.owner.service.domain.Owner;
+import com.marktsoft.practice.owner.repository.domain.Owner;
 import com.marktsoft.practice.owner.service.OwnerService;
 import com.marktsoft.practice.pet.controller.dto.PetResponseDTO;
-import com.marktsoft.practice.pet.service.domain.Pet;
+import com.marktsoft.practice.pet.repository.domain.Pet;
 import com.marktsoft.practice.pet.controller.dto.PetDTO;
 import com.marktsoft.practice.pet.repository.PetRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.marktsoft.practice.owner.service.OwnerServiceTest.EMAIL;
 import static com.marktsoft.practice.owner.service.OwnerServiceTest.PHONE_NUMBER;
@@ -46,7 +47,7 @@ public class PetServiceTest {
         when(petRepository.findAll()).thenReturn(List.of(pet));
         PetDTO petDTO = createPetDTO();
 
-        List<PetDTO> result = petService.findAllPets();
+        List<PetDTO> result = petService.findAll();
 
         assertEquals(result, List.of(petDTO));
     }
@@ -58,11 +59,11 @@ public class PetServiceTest {
         PetDTO petDTO = createPetDTO(pet);
         PetResponseDTO petResponseDTO = createPetResponseDTO();
 
-        when(ownerService.findOwnerById(ID)).thenReturn(owner);
+        when(ownerService.findById(ID)).thenReturn(owner);
         pet.setPractice_owner(owner);
         when(petRepository.save(pet)).thenReturn(pet);
 
-        PetResponseDTO result = petService.createPet(ID, petDTO);
+        PetResponseDTO result = petService.create(ID, petDTO);
 
         assertEquals(result, petResponseDTO);
     }
@@ -76,7 +77,7 @@ public class PetServiceTest {
         when(petRepository.findById(ID)).thenReturn(Optional.of(pet));
         when(petRepository.save(pet)).thenReturn(pet);
 
-        PetResponseDTO result = petService.updatePet(ID, petDTO);
+        PetResponseDTO result = petService.update(ID, petDTO);
 
         assertEquals(result, petResponseDTO);
     }
@@ -87,7 +88,7 @@ public class PetServiceTest {
         when(petRepository.findById(ID)).thenReturn(Optional.ofNullable(pet));
         doNothing().when(petRepository).deleteById(ID);
 
-        petService.deletePet(ID);
+        petService.delete(ID);
 
         verify(petRepository,times(1)).deleteById(ID);
     }

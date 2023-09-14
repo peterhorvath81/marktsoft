@@ -8,11 +8,11 @@ import java.util.List;
 
 @Service
 public interface PetService {
-    List<PetDTO> findAllPets();
+    List<PetDTO> findAll();
 
-    PetResponseDTO createPet(Long id, PetDTO petDTO);
+    PetResponseDTO create(Long id, PetDTO petDTO);
 
-    PetResponseDTO updatePet(Long id, PetDTO petDTO);
+    PetResponseDTO update(Long id, PetDTO petDTO);
 
-    void deletePet(Long id);
+    void delete(Long id);
 }
