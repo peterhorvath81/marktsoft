@@ -1,8 +1,10 @@
 package com.marktsoft.practice.pet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
 import com.marktsoft.practice.pet.controller.dto.PetDTO;
 import com.marktsoft.practice.pet.controller.dto.PetResponseDTO;
+import com.marktsoft.practice.pet.controller.dto.PetUpdateDTO;
 import com.marktsoft.practice.pet.service.PetService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,7 @@ public class PetControllerTest {
         when(petService.findAll()).thenReturn(List.of(petDTO));
 
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/pet")
+                .get("/pet")
                 .accept(APPLICATION_JSON)).andExpect(status().isOk());
     }
 
@@ -51,7 +53,7 @@ public class PetControllerTest {
         PetResponseDTO petResponseDTO = createPetResponseDTO();
         when(petService.create(ID,petDTO)).thenReturn(petResponseDTO);
 
-        mockMvc.perform(post("/api/pet/owner/{id}", ID)
+        mockMvc.perform(post("/pet/owner/{id}", ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(petDTO)))
                 .andExpect(status().isOk());
@@ -59,14 +61,13 @@ public class PetControllerTest {
 
     @Test
     public void shouldUpdatePet() throws Exception {
-        PetDTO petDTO = createPetDTO();
-        petDTO.setName("Terry");
+        PetUpdateDTO petUpdateDTO = createPetUpdateDTO();
         PetResponseDTO petResponseDTO = createPetResponseDTO();
-        when(petService.update(ID,petDTO)).thenReturn(petResponseDTO);
+        when(petService.update(ID,petUpdateDTO)).thenReturn(petResponseDTO);
 
-        mockMvc.perform(put("/api/pet/{id}", ID)
+        mockMvc.perform(put("/pet/{id}", ID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(petDTO)))
+                        .content(objectMapper.writeValueAsString(petUpdateDTO)))
                 .andExpect(status().isOk());
     }
 
@@ -74,7 +75,7 @@ public class PetControllerTest {
     public void shouldDeletePet() throws Exception {
         doNothing().when(petService).delete(ID);
 
-        mockMvc.perform(delete("/api/pet/{id}", ID))
+        mockMvc.perform(delete("/pet/{id}", ID))
                 .andExpect(status().isOk());
     }
 
@@ -91,5 +92,13 @@ public class PetControllerTest {
         petResponseDTO.setSpecies(SPECIES);
         petResponseDTO.setName(NAME);
         return petResponseDTO;
+    }
+
+    private PetUpdateDTO createPetUpdateDTO() {
+        PetUpdateDTO petUpdateDTO = new PetUpdateDTO();
+        petUpdateDTO.setName("testPet");
+        petUpdateDTO.setSpecies(SPECIES);
+        petUpdateDTO.setOwnerDTO(new OwnerDTO("Terry", "5873", "email@email.com"));
+        return  petUpdateDTO;
     }
 }

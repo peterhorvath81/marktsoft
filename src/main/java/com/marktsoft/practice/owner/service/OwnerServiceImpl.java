@@ -5,7 +5,9 @@ import com.marktsoft.practice.owner.controller.dto.OwnerResponseDTO;
 import com.marktsoft.practice.owner.repository.domain.Owner;
 import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
 import com.marktsoft.practice.owner.repository.OwnerRepository;
+import com.marktsoft.practice.pet.controller.dto.PetDTO;
 import com.marktsoft.practice.pet.repository.domain.Pet;
+import com.marktsoft.practice.pet.service.OtherService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -24,10 +27,12 @@ public class OwnerServiceImpl implements OwnerService {
 
     private OwnerRepository ownerRepository;
 
+//    private OtherService otherService;
+
     @Override
     public List<OwnerDTO> getAll(Sort sort) {
         List<Owner> ownerList = ownerRepository.findAll(sort);
-//        update(1L, new OwnerDTO("Álémér","33333", "asd@email.com")); rákérdezni újra
+//        otherService.update(1L, new PetDTO("Snake", "Oszkar"));
         log.info("Fetching owners");
         return getOwnerDTOList(ownerList);
     }
@@ -69,17 +74,20 @@ public class OwnerServiceImpl implements OwnerService {
     public void delete(Long id) {
         Owner owner = ownerRepository.findById(id)
                 .orElseThrow(() -> new NotFoundRequestException("The owner with the id " +id+ " not found"));
-        owner.setPets(null);
+        owner.setPetList(null);
         log.info("deleting owner");
         ownerRepository.delete(owner);
     }
 
     @Override
     public void updateWithPet(Owner owner, Pet pet) {
-        List<Pet> petList = new ArrayList<>();
-        petList.add(pet);
-        owner.setPets(petList);
+        owner.getPetList().add(pet);
         ownerRepository.save(owner);
+    }
+
+    @Override
+    public Owner findByName(String name) {
+        return ownerRepository.findByName(name);
     }
 
     private static List<OwnerDTO> getOwnerDTOList(List<Owner> ownerList) {

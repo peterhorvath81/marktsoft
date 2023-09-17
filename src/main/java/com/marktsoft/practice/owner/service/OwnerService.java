@@ -26,4 +26,6 @@ public interface OwnerService {
     void delete(Long id);
 
     void updateWithPet(Owner owner, Pet pet);
+
+    Owner findByName(String name);
 }

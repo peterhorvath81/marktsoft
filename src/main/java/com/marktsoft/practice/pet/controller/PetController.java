@@ -2,6 +2,7 @@ package com.marktsoft.practice.pet.controller;
 
 import com.marktsoft.practice.pet.controller.dto.PetDTO;
 import com.marktsoft.practice.pet.controller.dto.PetResponseDTO;
+import com.marktsoft.practice.pet.controller.dto.PetUpdateDTO;
 import com.marktsoft.practice.pet.service.PetService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +22,13 @@ public class PetController {
     }
 
     @PostMapping("/owner/{id}")
-    public PetResponseDTO register(@PathVariable("id") Long id, @RequestBody PetDTO petDTO) {
-        return petService.create(id, petDTO);
+    public PetResponseDTO register(@PathVariable("id") Long ownerId, @RequestBody PetDTO petDTO) {
+        return petService.create(ownerId, petDTO);
     }
 
     @PutMapping("/{id}")
-    public PetResponseDTO update(@PathVariable("id") Long id, @RequestBody PetDTO petDTO) {
-        return petService.update(id, petDTO);
+    public PetResponseDTO update(@PathVariable("id") Long petId, @RequestBody PetUpdateDTO petUpdateDTO) {
+        return petService.update(petId, petUpdateDTO);
     }
 
     @DeleteMapping("/{id}")

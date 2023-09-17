@@ -5,11 +5,13 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "practice_owner")
+@Table(name = "p_owner")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -26,6 +28,11 @@ public class Owner {
     @NotBlank(message = "the e-mail address can not be null")
     private String email;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "practice_owner")
-    private List<Pet> pets;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "Owner_Pet",
+            joinColumns = {@JoinColumn(name = "p_owner_id")},
+            inverseJoinColumns = {@JoinColumn(name = "p_pet_id")}
+    )
+    private List<Pet> petList;
 }

@@ -4,12 +4,16 @@ import com.marktsoft.practice.owner.repository.domain.Owner;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "practice_pet")
+@Table(name = "p_pet")
 public class Pet {
 
     @Id
@@ -20,8 +24,6 @@ public class Pet {
 
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Owner practice_owner;
-
-
+    @ManyToMany(mappedBy = "petList")
+    private List<Owner> ownerList;
 }

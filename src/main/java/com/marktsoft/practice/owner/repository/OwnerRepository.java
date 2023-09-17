@@ -12,4 +12,5 @@ import java.util.List;
 @Repository
 public interface OwnerRepository extends JpaRepository<Owner, Long> {
 
+    Owner findByName(String name);
 }

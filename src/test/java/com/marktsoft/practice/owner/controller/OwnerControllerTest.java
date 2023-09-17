@@ -8,10 +8,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,12 +38,13 @@ public class OwnerControllerTest {
 
     @Test
     public void shouldGetAllOwners() throws Exception {
-//        OwnerDTO ownerDTO = createOwnerDTO();
-//        when(ownerService.getAllOwner()).thenReturn(List.of(ownerDTO));
-//
-//        mockMvc.perform(MockMvcRequestBuilders
-//                .get("/api/owner")
-//                .accept(APPLICATION_JSON)).andExpect(status().isOk());
+        OwnerDTO ownerDTO = createOwnerDTO();
+        Sort sort = Sort.by(Sort.Direction.DESC, "NAME");
+        when(ownerService.getAll(sort)).thenReturn(List.of(ownerDTO));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/owner")
+                .accept(APPLICATION_JSON)).andExpect(status().isOk());
     }
 
     @Test
@@ -47,7 +53,7 @@ public class OwnerControllerTest {
         OwnerResponseDTO ownerResponseDTO = createOwnerResponseDTO();
         when(ownerService.create(ownerDTO)).thenReturn(ownerResponseDTO);
 
-        mockMvc.perform(post("/api/owner").contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(post("/owner").contentType(APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(ownerDTO)))
                 .andExpect(status().isOk());
     }
@@ -59,8 +65,8 @@ public class OwnerControllerTest {
         OwnerResponseDTO ownerResponseDTO = createOwnerResponseDTO();
         when(ownerService.update(ID, ownerDTO)).thenReturn(ownerResponseDTO);
 
-        mockMvc.perform(put("/api/owner/{id}", ID)
-                        .contentType(MediaType.APPLICATION_JSON)
+        mockMvc.perform(put("/owner/{id}", ID)
+                        .contentType(APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ownerDTO)))
                 .andExpect(status().isOk());
     }
@@ -69,7 +75,7 @@ public class OwnerControllerTest {
     public void shouldDeleteOwner() throws Exception {
         doNothing().when(ownerService).delete(ID);
 
-        mockMvc.perform(delete("/api/owner/{id}", ID))
+        mockMvc.perform(delete("/owner/{id}", ID))
                 .andExpect(status().isOk());
     }
 
