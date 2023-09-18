@@ -4,6 +4,7 @@ import com.marktsoft.practice.owner.controller.dto.OwnerResponseDTO;
 import com.marktsoft.practice.owner.repository.domain.Owner;
 import com.marktsoft.practice.owner.controller.dto.OwnerDTO;
 import com.marktsoft.practice.owner.repository.OwnerRepository;
+import com.marktsoft.practice.pet.repository.domain.Pet;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.marktsoft.practice.pet.service.PetServiceTest.SPECIES;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -76,6 +78,16 @@ public class OwnerServiceTest {
     }
 
     @Test
+    public void shouldFindById() {
+        Owner owner = createOwner();
+        when(ownerRepository.findById(ID)).thenReturn(Optional.ofNullable(owner));
+
+        Owner result = ownerService.findById(ID);
+
+        assertEquals(result, owner);
+    }
+
+    @Test
     public void shouldCreateOwner() {
         OwnerDTO ownerDTO = createOwnerDTO();
         Owner owner = createOwner(ownerDTO);
@@ -98,6 +110,31 @@ public class OwnerServiceTest {
         OwnerResponseDTO result = ownerService.update(ID, ownerDTO);
 
         assertEquals(result, ownerResponseDTO);
+    }
+
+    @Test
+    public void shouldUpdateOwnerWithPet() {
+        Owner owner = createOwner();
+        Pet pet = createPet();
+        List<Pet> petList = new ArrayList<>();
+        petList.add(pet);
+        owner.setPetList(petList);
+
+        when(ownerRepository.save(owner)).thenReturn(owner);
+
+        ownerService.updateWithPet(owner,pet);
+
+        verify(ownerRepository, times(1)).save(owner);
+    }
+
+    @Test
+    public void shouldFindOwnerByName() {
+        Owner owner = createOwner();
+        when(ownerRepository.findByName(NAME)).thenReturn(owner);
+
+        Owner result = ownerService.findByName(NAME);
+
+        assertEquals(result, owner);
     }
 
     @Test
@@ -159,5 +196,14 @@ public class OwnerServiceTest {
         ownerResponseDTO.setName(NAME);
         ownerResponseDTO.setEmail(EMAIL);
         return ownerResponseDTO;
+    }
+
+    private Pet createPet() {
+        return Pet
+                .builder()
+                .id(ID)
+                .species(SPECIES)
+                .name(NAME)
+                .build();
     }
 }

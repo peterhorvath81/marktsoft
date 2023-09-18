@@ -27,6 +27,9 @@ public class OwnerControllerTest {
     public static final String NAME = "John Doe";
     public static final String EMAIL = "johndoe@gmail.com";
     public static final String PHONE_NUMBER = "12345";
+    public static final String SORT_DIRECTION = "ASC";
+    public static final int PAGE_NUMBER = 1;
+    public static final int PAGE_COUNT = 1;
 
     @MockBean
     private OwnerService ownerService;
@@ -44,6 +47,17 @@ public class OwnerControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/owner")
+                .accept(APPLICATION_JSON)).andExpect(status().isOk());
+    }
+
+    @Test
+    public void shouldGetAllOwnersPaginated() throws Exception {
+        OwnerDTO ownerDTO = createOwnerDTO();
+
+        when(ownerService.getAllPaginated(SORT_DIRECTION, PAGE_NUMBER, PAGE_COUNT)).thenReturn(List.of(ownerDTO));
+
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/owner/pages?sortBy=phoneNumber&pageNumber=1&pageCount=1")
                 .accept(APPLICATION_JSON)).andExpect(status().isOk());
     }
 

@@ -24,6 +24,11 @@ public class Pet {
 
     private String name;
 
-    @ManyToMany(mappedBy = "petList")
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "Owner_Pet",
+            joinColumns = {@JoinColumn(name = "p_pet_id")},
+            inverseJoinColumns = {@JoinColumn(name = "p_owner_id")}
+    )
     private List<Owner> ownerList;
 }

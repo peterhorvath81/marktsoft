@@ -27,12 +27,9 @@ public class OwnerServiceImpl implements OwnerService {
 
     private OwnerRepository ownerRepository;
 
-//    private OtherService otherService;
-
     @Override
     public List<OwnerDTO> getAll(Sort sort) {
         List<Owner> ownerList = ownerRepository.findAll(sort);
-//        otherService.update(1L, new PetDTO("Snake", "Oszkar"));
         log.info("Fetching owners");
         return getOwnerDTOList(ownerList);
     }
