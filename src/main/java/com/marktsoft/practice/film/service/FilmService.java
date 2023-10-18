@@ -11,6 +11,8 @@ import java.util.List;
 public interface FilmService {
     List<FilmDTO> findAll();
 
+    FilmDTO findById(Integer id);
+
     FilmResponseDTO create(/*Long id,*/ FilmDTO filmDTO);
 
     FilmResponseDTO update(Integer filmId, FilmUpdateDTO filmUpdateDTO);

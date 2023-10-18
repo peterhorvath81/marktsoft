@@ -19,10 +19,13 @@ public class CustomerController {
     private CustomerService customerService;
 
     @GetMapping
-    public List<CustomerDTO> getAll(@RequestParam(defaultValue = "NAME") SortField sortField,
-                                    @RequestParam(required = false, defaultValue = "DESC") Sort.Direction sortDirection) {
-        Sort sort = Sort.by(sortDirection, sortField.getDatabaseFieldName());
-        return customerService.getAll(sort);
+    public List<CustomerDTO> getAll() {
+        return customerService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public CustomerDTO findById(@PathVariable("id") Integer id) {
+        return customerService.findById(id);
     }
 
     @GetMapping("/pages")

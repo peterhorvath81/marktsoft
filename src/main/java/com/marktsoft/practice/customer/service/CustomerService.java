@@ -11,11 +11,11 @@ import java.util.List;
 @Service
 public interface CustomerService {
 
-    List<CustomerDTO> getAll(Sort sort);
+    List<CustomerDTO> getAll();
 
     List<CustomerDTO> getAllPaginated(String sortBy, Integer pageNumber, Integer pageCount);
 
-    Customer findById(Integer id);
+    CustomerDTO findById(Integer id);
 
     CustomerResponseDTO create(CustomerDTO customerDTO);
 

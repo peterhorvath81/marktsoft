@@ -21,6 +21,11 @@ public class FilmController {
         return filmService.findAll();
     }
 
+    @GetMapping("/{id}")
+    public FilmDTO findById(@PathVariable("id") Integer id) {
+        return filmService.findById(id);
+    }
+
     @PostMapping
     public FilmResponseDTO register(@RequestBody FilmDTO filmDTO) {
         return filmService.create(filmDTO);

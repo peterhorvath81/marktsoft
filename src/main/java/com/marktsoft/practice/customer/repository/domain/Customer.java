@@ -1,9 +1,6 @@
 package com.marktsoft.practice.customer.repository.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -11,8 +8,7 @@ import lombok.*;
 import java.time.Instant;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @Entity
 @Table(name = "customer")
 @Builder
@@ -20,35 +16,34 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class Customer {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id", nullable = false)
     private Integer id;
 
     @Size(max = 45)
     @NotNull
-    @Column(name = "first_name", nullable = false, length = 45)
+    @Column( nullable = false, length = 45)
     private String firstName;
 
     @Size(max = 45)
     @NotNull
-    @Column(name = "last_name", nullable = false, length = 45)
+    @Column(nullable = false, length = 45)
     private String lastName;
 
     @Size(max = 50)
-    @Column(name = "email", length = 50)
+    @Column(length = 50)
     private String email;
 
     @NotNull
-    @Column(name = "activebool", nullable = false)
+    @Column(nullable = false)
     private Boolean activebool = false;
 
     @NotNull
-    @Column(name = "create_date", nullable = false)
+    @Column(nullable = false)
     private LocalDate createDate;
 
-    @Column(name = "last_update")
     private Instant lastUpdate;
 
-    @Column(name = "active")
     private Integer active;
 
 }

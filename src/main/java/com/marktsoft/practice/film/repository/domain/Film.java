@@ -24,35 +24,32 @@ public class Film {
 
     @Size(max = 255)
     @NotNull
-    @Column(name = "title", nullable = false)
+    @Column(nullable = false)
     private String title;
 
-    @Column(name = "description", length = Integer.MAX_VALUE)
+    @Column(length = Integer.MAX_VALUE)
     private String description;
 
-    @Column(name = "release_year")
     private Integer releaseYear;
 
     @NotNull
-    @Column(name = "rental_duration", nullable = false)
+    @Column(nullable = false)
     private Short rentalDuration;
 
     @NotNull
-    @Column(name = "rental_rate", nullable = false, precision = 4, scale = 2)
+    @Column(nullable = false, precision = 4, scale = 2)
     private BigDecimal rentalRate;
 
-    @Column(name = "length")
     private Short length;
 
     @NotNull
-    @Column(name = "replacement_cost", nullable = false, precision = 5, scale = 2)
+    @Column(nullable = false, precision = 5, scale = 2)
     private BigDecimal replacementCost;
 
     @NotNull
-    @Column(name = "last_update", nullable = false)
+    @Column(nullable = false)
     private Instant lastUpdate;
 
-    @Column(name = "special_features")
     private List<String> specialFeatures;
 
 /*

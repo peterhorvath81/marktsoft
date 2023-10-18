@@ -42,8 +42,7 @@ public class CustomerControllerTest {
     @Test
     public void shouldGetAllCustomers() throws Exception {
         CustomerDTO customerDTO = createCustomerDTO();
-        Sort sort = Sort.by(Sort.Direction.DESC, "NAME");
-        when(customerService.getAll(sort)).thenReturn(List.of(customerDTO));
+        when(customerService.getAll()).thenReturn(List.of(customerDTO));
 
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/customer")
