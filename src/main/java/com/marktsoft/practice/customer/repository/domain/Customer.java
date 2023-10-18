@@ -42,7 +42,7 @@ public class Customer {
     @Column(nullable = false)
     private LocalDate createDate;
 
-    private Instant lastUpdate;
+    private LocalDate lastUpdate;
 
     private Integer active;
 

@@ -2,6 +2,7 @@ package com.marktsoft.practice.customer.service;
 
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
 import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
+import com.marktsoft.practice.customer.mapper.CustomerMapper;
 import com.marktsoft.practice.customer.repository.CustomerRepository;
 import com.marktsoft.practice.customer.repository.domain.Customer;
 import com.marktsoft.practice.exception.NotFoundRequestException;
@@ -14,6 +15,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,40 +42,32 @@ public class CustomerServiceImpl implements CustomerService {
     @Getter
     private ApplicationContext applicationContext;
 
+    private JdbcTemplate jdbcTemplate;
+
+    private CustomerMapper customerMapper;
+
 
     @Override
     public List<CustomerDTO> getAll() {
 
-        DataSource ds = (DataSource) getApplicationContext().getBean("dataSource");
-
-        List<CustomerDTO> customerList = new ArrayList<>();
-
         String SQL_SELECT = "Select * from customer";
+        List<Customer> customers = jdbcTemplate.query(SQL_SELECT, (resultset, i) -> new Customer(
+                resultset.getInt("customer_id"),
+                resultset.getString("first_name"),
+                resultset.getString("last_name"),
+                resultset.getString("email"),
+                resultset.getBoolean("activebool"),
+                resultset.getDate("create_date").toLocalDate(),
+                resultset.getDate("last_update").toLocalDate(),
+                resultset.getInt("active")
+        ));
 
-        try (Connection connection = ds.getConnection();
-             Statement statement = connection.createStatement()) {
-
-            try(ResultSet resultSet = statement.executeQuery(SQL_SELECT)) {
-
-                while (resultSet.next()) {
-
-                    String firstName = resultSet.getString("first_name");
-                    String lastName = resultSet.getString("last_name");
-                    String email = resultSet.getString("email");
-
-                    CustomerDTO customerDTO = new CustomerDTO(firstName, lastName, email);
-
-                    customerList.add(customerDTO);
-                }
-            }
-
-        } catch(SQLException e) {
-            throw new RuntimeException("Error occurred while executing the following SQL query: "
-                    + SQL_SELECT+ e.getMessage());
-        }
-
-        log.info("Fetching customers");
-        return customerList;
+        return customers.stream().map(customer -> CustomerDTO
+                .builder()
+                .firstName(customer.getFirstName())
+                .lastName(customer.getLastName())
+                .email(customer.getEmail())
+                .build()).toList();
     }
 
     public List<CustomerDTO> getAllPaginated(String sortBy, Integer pageNumber, Integer pageCount) {
@@ -88,37 +83,12 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerDTO customerDTO = new CustomerDTO();
 
         String SQL_SELECT = "Select * from customer where customer_id=?";
-        
-        try (Connection connection = DriverManager
-                .getConnection(JDBC_CONNECTION, USER, PASSWORD);
-             PreparedStatement preparedStatement = connection.prepareStatement(SQL_SELECT)) {
+        List<Customer> customer = jdbcTemplate.query(SQL_SELECT, ps -> ps.setInt(1, id), customerMapper);
 
-            preparedStatement.setInt(1, id);
+        customerDTO.setFirstName(customer.get(0).getFirstName());
+        customerDTO.setLastName(customer.get(0).getLastName());
+        customerDTO.setEmail(customer.get(0).getEmail());
 
-            try(ResultSet resultSet = preparedStatement.executeQuery()) {
-
-                while (resultSet.next()) {
-
-                    String firstName = resultSet.getString("first_name");
-                    String lastName = resultSet.getString("last_name");
-                    String email = resultSet.getString("email");
-
-                    if (firstName!=null && lastName!=null && email!=null) {
-                        customerDTO.setFirstName(firstName);
-                        customerDTO.setLastName(lastName);
-                        customerDTO.setEmail(email);
-                    }
-                    else {
-                        throw new NotFoundRequestException("The customer with id: "+id+"not found");
-                    }
-                }
-            }
-
-
-        } catch(SQLException e) {
-            throw new RuntimeException("Error occurred while executing the following SQL query: "
-                    + SQL_SELECT+ e.getMessage());
-        }
         return customerDTO;
     }
 
@@ -185,7 +155,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .email(customerDTO.getEmail())
                 .activebool(true)
                 .createDate(LocalDate.now())
-                .lastUpdate(Instant.now())
+                .lastUpdate(LocalDate.now())
                 .build();
     }
 }
