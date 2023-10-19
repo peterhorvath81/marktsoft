@@ -9,37 +9,21 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 @Data
-@Entity
-@Table(name = "customer")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customer_id", nullable = false)
+
     private Integer id;
 
-    @Size(max = 45)
-    @NotNull
-    @Column( nullable = false, length = 45)
     private String firstName;
 
-    @Size(max = 45)
-    @NotNull
-    @Column(nullable = false, length = 45)
     private String lastName;
 
-    @Size(max = 50)
-    @Column(length = 50)
     private String email;
 
-    @NotNull
-    @Column(nullable = false)
     private Boolean activebool = false;
 
-    @NotNull
-    @Column(nullable = false)
     private LocalDate createDate;
 
     private LocalDate lastUpdate;

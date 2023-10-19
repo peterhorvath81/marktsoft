@@ -2,40 +2,32 @@ package com.marktsoft.practice.customer.service;
 
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
 import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
+import com.marktsoft.practice.customer.controller.dto.PaymentDTO;
+import com.marktsoft.practice.customer.controller.dto.mapper.CustomerRequestDTOMapper;
+import com.marktsoft.practice.customer.controller.dto.request.CustomerResultRow;
 import com.marktsoft.practice.customer.mapper.CustomerMapper;
 import com.marktsoft.practice.customer.repository.CustomerRepository;
 import com.marktsoft.practice.customer.repository.domain.Customer;
 import com.marktsoft.practice.exception.NotFoundRequestException;
+import com.marktsoft.practice.payment.mapper.PaymentMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.postgresql.Driver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementSetter;
-import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
-import java.sql.*;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
-
-    public static final String JDBC_CONNECTION = "jdbc:postgresql://localhost:5432/dvdrental";
-    public static final String USER = "postgres";
-    public static final String PASSWORD = "password";
 
     private CustomerRepository customerRepository;
 
@@ -45,6 +37,10 @@ public class CustomerServiceImpl implements CustomerService {
     private JdbcTemplate jdbcTemplate;
 
     private CustomerMapper customerMapper;
+
+    private PaymentMapper paymentMapper;
+
+    private CustomerRequestDTOMapper customerRequestDTOMapper;
 
 
     @Override
@@ -78,16 +74,49 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerDTO findById(Integer id) {
+    public CustomerDTO findById(Integer id) { //ResultSetExtractorral - 2 rowmapper
 
         CustomerDTO customerDTO = new CustomerDTO();
 
-        String SQL_SELECT = "Select * from customer where customer_id=?";
-        List<Customer> customer = jdbcTemplate.query(SQL_SELECT, ps -> ps.setInt(1, id), customerMapper);
+        String SQL_JOIN = "select first_name, last_name, email, payment_id, amount, payment_date from customer c " +
+                "join payment p ON c.customer_id=p.customer_id " +
+                "where c.customer_id=? " +
+                "order by c.customer_id ";
 
-        customerDTO.setFirstName(customer.get(0).getFirstName());
-        customerDTO.setLastName(customer.get(0).getLastName());
-        customerDTO.setEmail(customer.get(0).getEmail());
+        List<CustomerResultRow> customerResultRowList = jdbcTemplate.query(SQL_JOIN, ps -> ps.setInt(1,id), customerRequestDTOMapper);
+
+        customerDTO.setFirstName(customerResultRowList.get(0).getFirstName());
+        customerDTO.setLastName(customerResultRowList.get(0).getLastName());
+        customerDTO.setEmail(customerResultRowList.get(0).getEmail());
+
+        List<PaymentDTO> paymentDTOList = customerResultRowList.stream().map(
+                customerResultRow -> {
+                    PaymentDTO paymentDTO = new PaymentDTO();
+                    paymentDTO.setPaymentId(customerResultRow.getPaymentId());
+                    paymentDTO.setAmount(customerResultRow.getAmount());
+                    paymentDTO.setPayment_date(customerResultRow.getPaymentDate());
+                    return paymentDTO;
+                }
+        ).toList();
+
+        customerDTO.setPayments(paymentDTOList);
+
+
+
+//        String SQL_SELECT = "Select * from customer where customer_id=?";
+//        List<Customer> customerList = jdbcTemplate.query(SQL_SELECT, ps -> ps.setInt(1, id), customerMapper);
+//
+//        String SQL_PAYMENT = "Select * from payment where customer_id=?";
+//        List<Payment> paymentList = jdbcTemplate.query(SQL_PAYMENT, ps -> ps.setInt(1, id), paymentMapper);
+//
+//        customerDTO.setFirstName(customerList.get(0).getFirstName());
+//        customerDTO.setLastName(customerList.get(0).getLastName());
+//        customerDTO.setEmail(customerList.get(0).getEmail());
+//        customerDTO.setPayments(paymentList.stream().map(payment -> PaymentDTO.builder()
+//                .paymentId(payment.getPaymentId())
+//                .amount(payment.getAmount())
+//                .payment_date(payment.getPayment_date())
+//                .build()).toList());
 
         return customerDTO;
     }
