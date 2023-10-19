@@ -25,6 +25,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hibernate.cfg.AvailableSettings.URL;
+
 @Service
 @Slf4j
 @AllArgsConstructor
@@ -35,21 +37,18 @@ public class CustomerServiceImpl implements CustomerService {
     public static final String PASSWORD = "password";
 
     private CustomerRepository customerRepository;
-
-    @Getter
-    private ApplicationContext applicationContext;
-
+    
+    private DataSource dataSource;
 
     @Override
     public List<CustomerDTO> getAll() {
-
-        DataSource ds = (DataSource) getApplicationContext().getBean("dataSource");
 
         List<CustomerDTO> customerList = new ArrayList<>();
 
         String SQL_SELECT = "Select * from customer";
 
-        try (Connection connection = ds.getConnection();
+        try (Connection connection = dataSource.getConnection();
+             Connection connection2 = DriverManager.getConnection(JDBC_CONNECTION, USER, PASSWORD);
              Statement statement = connection.createStatement()) {
 
             try(ResultSet resultSet = statement.executeQuery(SQL_SELECT)) {
