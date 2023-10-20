@@ -2,11 +2,9 @@ package com.marktsoft.practice.customer.controller;
 
 import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
-import com.marktsoft.practice.customer.controller.dto.SortField;
 import com.marktsoft.practice.customer.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,17 +21,14 @@ public class CustomerController {
         return customerService.getAll();
     }
 
-    @GetMapping("/{id}")
-    public CustomerDTO findById(@PathVariable("id") Integer id) {
-        return customerService.findById(id);
+    @GetMapping("/{id}/singlequery")
+    public CustomerDTO findByIdWithSingleQuery(@PathVariable("id") Integer id) {
+        return customerService.findByIdWithSingleQuery(id);
     }
 
-    @GetMapping("/pages")
-    public List<CustomerDTO> getAllPaginated(@RequestParam String sortBy,
-                                             @RequestParam("pageNumber") Integer pageNumber,
-                                             @RequestParam("pageCount") Integer pageCount) {
-        return customerService.getAllPaginated(sortBy, pageNumber, pageCount);
-
+    @GetMapping("/{id}/doublequery")
+    public CustomerDTO findByIdWithTwoQueries(@PathVariable("id") Integer id) {
+        return customerService.findByIdWithDoubleQuery(id);
     }
 
     @PostMapping

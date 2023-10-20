@@ -1,27 +1,5 @@
 package com.marktsoft.practice.customer.service;
 
-import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
-import com.marktsoft.practice.customer.repository.domain.Customer;
-import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
-import com.marktsoft.practice.customer.repository.CustomerRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 public class CustomerServiceTest {
 
 //    public static final Integer ID = 1;

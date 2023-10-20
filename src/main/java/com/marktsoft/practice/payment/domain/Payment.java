@@ -25,4 +25,10 @@ public class Payment {
     private Long amount;
 
     private LocalDate payment_date;
+
+    public Payment(Integer paymentId, Long amount, LocalDate payment_date) {
+        this.paymentId = paymentId;
+        this.amount = amount;
+        this.payment_date = payment_date;
+    }
 }

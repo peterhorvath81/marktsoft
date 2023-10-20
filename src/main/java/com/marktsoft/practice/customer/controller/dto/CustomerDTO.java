@@ -1,5 +1,6 @@
 package com.marktsoft.practice.customer.controller.dto;
 
+import com.marktsoft.practice.payment.dto.PaymentDTO;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

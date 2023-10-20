@@ -1,12 +1,13 @@
-package com.marktsoft.practice.customer.repository.domain;
+package com.marktsoft.practice.customer.domain;
 
-import jakarta.persistence.*;
+import com.marktsoft.practice.payment.domain.Payment;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -30,4 +31,13 @@ public class Customer {
 
     private Integer active;
 
+    private List<Payment> payment;
+
+    public Customer(Integer id, String firstName, String lastName, String email, List<Payment> payment) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.payment = payment;
+    }
 }

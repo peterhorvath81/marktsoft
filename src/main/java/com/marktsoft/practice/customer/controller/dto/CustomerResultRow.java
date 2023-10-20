@@ -1,4 +1,4 @@
-package com.marktsoft.practice.customer.controller.dto.request;
+package com.marktsoft.practice.customer.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

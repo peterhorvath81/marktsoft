@@ -1,6 +1,6 @@
-package com.marktsoft.practice.customer.mapper;
+package com.marktsoft.practice.customer.domain.mapper;
 
-import com.marktsoft.practice.customer.repository.domain.Customer;
+import com.marktsoft.practice.customer.domain.Customer;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +16,6 @@ public class CustomerMapper implements RowMapper<Customer> {
                 .firstName(rs.getString("first_name"))
                 .lastName(rs.getString("last_name"))
                 .email(rs.getString("email"))
-                .activebool(rs.getBoolean("activebool"))
-                .createDate(rs.getDate("create_date").toLocalDate())
-                .lastUpdate(rs.getDate("last_update").toLocalDate())
-                .active(rs.getInt("active"))
                 .build();
     }
 }

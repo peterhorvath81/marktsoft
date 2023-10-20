@@ -1,21 +1,16 @@
 package com.marktsoft.practice.film.service;
 
-import com.marktsoft.practice.exception.NotFoundRequestException;
 import com.marktsoft.practice.film.controller.dto.FilmResponseDTO;
 import com.marktsoft.practice.film.controller.dto.FilmUpdateDTO;
-import com.marktsoft.practice.film.repository.domain.Film;
+import com.marktsoft.practice.film.domain.Film;
 import com.marktsoft.practice.film.controller.dto.FilmDTO;
-import com.marktsoft.practice.film.repository.FilmRepository;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -27,7 +22,6 @@ public class FilmServiceImpl implements FilmService {
     public static final String USER = "postgres";
     public static final String PASSWORD = "password";
 
-    private FilmRepository filmRepository;
 
     @Override
     public List<FilmDTO> findAll() {
@@ -104,29 +98,28 @@ public class FilmServiceImpl implements FilmService {
     @Override
     public FilmResponseDTO create(FilmDTO filmDTO) {
         Film film = buildFilm(filmDTO);
-        filmRepository.save(film);
+//        filmRepository.save(film);
         log.info("Saving film");
         return getFilmResponseDTO(filmDTO, film);
     }
 
     @Override
-    @Transactional
     public FilmResponseDTO update(Integer filmId, FilmUpdateDTO filmUpdateDTO) {
-        Film film = filmRepository.findById(filmId)
-                .orElseThrow(() -> new NotFoundRequestException("Film with id: " + filmId + " not found"));
-        film.setTitle(filmUpdateDTO.getTitle());
-        film.setDescription(filmUpdateDTO.getDescription());
-        film.setReleaseYear(filmUpdateDTO.getReleaseYear());
+//        Film film = filmRepository.findById(filmId)
+//                .orElseThrow(() -> new NotFoundRequestException("Film with id: " + filmId + " not found"));
+//        film.setTitle(filmUpdateDTO.getTitle());
+//        film.setDescription(filmUpdateDTO.getDescription());
+//        film.setReleaseYear(filmUpdateDTO.getReleaseYear());
         log.info("updating film");
         return getUpdatedFilmResponseDTO(filmId, filmUpdateDTO);
     }
 
     @Override
     public void delete(Integer id) {
-        filmRepository.findById(id)
-                .orElseThrow(() -> new NotFoundRequestException("film with id: " + id + " not found"));
-        log.info("deleting film");
-        filmRepository.deleteById(id);
+//        filmRepository.findById(id)
+//                .orElseThrow(() -> new NotFoundRequestException("film with id: " + id + " not found"));
+//        log.info("deleting film");
+//        filmRepository.deleteById(id);
     }
 
     private static FilmResponseDTO getFilmResponseDTO(FilmDTO filmDTO, Film film) {

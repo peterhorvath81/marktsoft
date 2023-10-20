@@ -1,6 +1,6 @@
 package com.marktsoft.practice.customer.controller.dto.mapper;
 
-import com.marktsoft.practice.customer.controller.dto.request.CustomerResultRow;
+import com.marktsoft.practice.customer.controller.dto.CustomerResultRow;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class CustomerRequestDTOMapper implements RowMapper<CustomerResultRow> {
+public class CustomerResultRowMapper implements RowMapper<CustomerResultRow> {
 
     @Override
     public CustomerResultRow mapRow(ResultSet rs, int rowNum) throws SQLException {
