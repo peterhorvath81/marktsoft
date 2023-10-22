@@ -11,6 +11,8 @@ public interface CustomerService {
 
     List<CustomerDTO> getAll();
 
+    List<CustomerDTO> getAllPaginated(Integer pageNumber, Integer pageCount);
+
     CustomerDTO findByIdWithSingleQuery(Integer id);
 
     CustomerDTO findByIdWithDoubleQuery(Integer id);
@@ -20,7 +22,6 @@ public interface CustomerService {
     CustomerResponseDTO update(Integer id, CustomerDTO customerDTO);
 
     void delete(Integer id);
-
 
 
 //    void updateWithPet(Owner owner, Pet pet);

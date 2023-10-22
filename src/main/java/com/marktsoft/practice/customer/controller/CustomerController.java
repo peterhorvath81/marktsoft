@@ -21,6 +21,12 @@ public class CustomerController {
         return customerService.getAll();
     }
 
+    @GetMapping("/pages")
+    public List<CustomerDTO> getAllPaginated(@RequestParam("pageNumber") Integer pageNumber,
+                                             @RequestParam("pageCount") Integer pageCount) {
+        return customerService.getAllPaginated(pageNumber, pageCount);
+    }
+
     @GetMapping("/{id}/singlequery")
     public CustomerDTO findByIdWithSingleQuery(@PathVariable("id") Integer id) {
         return customerService.findByIdWithSingleQuery(id);

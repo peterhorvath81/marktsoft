@@ -32,6 +32,18 @@ public class CustomerServiceImpl implements CustomerService {
             "from customer c " +
             "join payment p " +
             "ON c.customer_id=p.customer_id";
+
+    public static final String SQL_CUSTOMER_PAGINATED = "select c.customer_id," +
+            "first_name," +
+            "last_name," +
+            "email," +
+            "payment_id, " +
+            "amount, " +
+            "payment_date " +
+            "from (select * from customer ORDER BY customer_id ASC LIMIT ? OFFSET ?) " +
+            "AS c " +
+            "join payment p " +
+            "ON c.customer_id=p.customer_id";
     public static final String SQL_FIND_BY_ID = "select c.customer_id, first_name, last_name, email, payment_id, amount, " +
                                                 "payment_date from customer c " +
                                                 "join payment p ON c.customer_id=p.customer_id " +
@@ -56,60 +68,36 @@ public class CustomerServiceImpl implements CustomerService {
         List<Customer> customerList = jdbcTemplate.query(SQL_CUSTOMER_SELECT, customerResultSetExtractor);
 
 
-        List<CustomerDTO> customerDTOList = customerList.stream().map(customer ->
-                CustomerDTO.builder()
-                        .firstName(customer.getFirstName())
-                        .lastName(customer.getLastName())
-                        .email(customer.getEmail())
-                        .payments(customer.getPayment().stream().map(payment -> {
-                            PaymentDTO paymentDTO = new PaymentDTO();
-                            paymentDTO.setPaymentId(payment.getPaymentId());
-                            paymentDTO.setAmount(payment.getAmount());
-                            paymentDTO.setPayment_date(payment.getPayment_date());
-                            return paymentDTO;
-                        }).toList())
-                        .build()).toList();
-        log.info("****CustomerDtoList: "+customerDTOList + "*******");
-        return customerDTOList;
-
-//        List<Customer> customers = jdbcTemplate.query(SQL_CUSTOMER_SELECT, (resultset, i) -> new Customer(
-//                resultset.getInt("customer_id"),
-//                resultset.getString("first_name"),
-//                resultset.getString("last_name"),
-//                resultset.getString("email"),
-//                resultset.getBoolean("activebool"),
-//                resultset.getDate("create_date").toLocalDate(),
-//                resultset.getDate("last_update").toLocalDate(),
-//                resultset.getInt("active")
-//        ));
-//
-//        return customers.stream().map(customer -> CustomerDTO
-//                .builder()
-//                .firstName(customer.getFirstName())
-//                .lastName(customer.getLastName())
-//                .email(customer.getEmail())
-//                .build()).toList();
-//        return null;
+        return getCustomerDTOList(customerList);
     }
+
+    @Override
+    public List<CustomerDTO> getAllPaginated(Integer pageNumber, Integer pageCount) {
+
+        Integer limit = null;
+        Integer offset = null;
+
+        if(pageNumber==1) {
+            offset = 0;
+            limit = pageCount;
+        } else {
+            offset = pageNumber*pageCount;
+            limit = pageCount;
+        }
+
+        List<Customer> customerList = jdbcTemplate
+                .query(SQL_CUSTOMER_PAGINATED, customerResultSetExtractor, limit, offset);
+
+        return getCustomerDTOList(customerList);
+    }
+
 
     @Override
     public CustomerDTO findByIdWithSingleQuery(Integer id) {
 
         List<Customer> customerList = jdbcTemplate.query(SQL_FIND_BY_ID, customerResultSetExtractor, id);
 
-        return customerList.stream().map(customer ->
-                CustomerDTO.builder()
-                        .firstName(customer.getFirstName())
-                        .lastName(customer.getLastName())
-                        .email(customer.getEmail())
-                        .payments(customer.getPayment().stream().map(payment -> {
-                            PaymentDTO paymentDTO = new PaymentDTO();
-                            paymentDTO.setPaymentId(payment.getPaymentId());
-                            paymentDTO.setAmount(payment.getAmount());
-                            paymentDTO.setPayment_date(payment.getPayment_date());
-                            return paymentDTO;
-                        }).toList())
-                        .build()).toList().get(0);
+        return getCustomerDTOList(customerList).get(0);
     }
 
     @Override
@@ -173,12 +161,28 @@ public class CustomerServiceImpl implements CustomerService {
 //        return customerRepository.findByName(name);
 //    }
 
+//    private static List<CustomerDTO> getCustomerDTOList(List<Customer> customerList) {
+//        return customerList.stream().map(customer -> CustomerDTO.builder()
+//                .firstName(customer.getFirstName())
+//                .lastName(customer.getLastName())
+//                .email(customer.getEmail())
+//                .build()).toList();
+//    }
+
     private static List<CustomerDTO> getCustomerDTOList(List<Customer> customerList) {
-        return customerList.stream().map(customer -> CustomerDTO.builder()
-                .firstName(customer.getFirstName())
-                .lastName(customer.getLastName())
-                .email(customer.getEmail())
-                .build()).toList();
+        return customerList.stream().map(customer ->
+                CustomerDTO.builder()
+                        .firstName(customer.getFirstName())
+                        .lastName(customer.getLastName())
+                        .email(customer.getEmail())
+                        .payments(customer.getPayment().stream().map(payment -> {
+                            PaymentDTO paymentDTO = new PaymentDTO();
+                            paymentDTO.setPaymentId(payment.getPaymentId());
+                            paymentDTO.setAmount(payment.getAmount());
+                            paymentDTO.setPayment_date(payment.getPayment_date());
+                            return paymentDTO;
+                        }).toList())
+                        .build()).toList();
     }
 
     private static CustomerResponseDTO getCustomerResponseDTO(Customer customer) {
