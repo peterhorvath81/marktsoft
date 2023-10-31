@@ -2,6 +2,7 @@ package com.marktsoft.practice.customer.controller;
 
 import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
+import com.marktsoft.practice.customer.controller.dto.PaginatedCustomerResponseDTO;
 import com.marktsoft.practice.customer.service.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,8 @@ public class CustomerController {
     }
 
     @GetMapping("/pages")
-    public List<CustomerDTO> getAllPaginated(@RequestParam("pageNumber") Integer pageNumber,
-                                             @RequestParam("pageCount") Integer pageCount) {
+    public PaginatedCustomerResponseDTO getAllPaginated(@RequestParam("pageNumber") Integer pageNumber,
+                                                        @RequestParam("pageCount") Integer pageCount) {
         return customerService.getAllPaginated(pageNumber, pageCount);
     }
 

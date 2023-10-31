@@ -2,6 +2,7 @@ package com.marktsoft.practice.customer.service;
 
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
 import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
+import com.marktsoft.practice.customer.controller.dto.PaginatedCustomerResponseDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,7 +12,7 @@ public interface CustomerService {
 
     List<CustomerDTO> getAll();
 
-    List<CustomerDTO> getAllPaginated(Integer pageNumber, Integer pageCount);
+    PaginatedCustomerResponseDTO getAllPaginated(Integer pageNumber, Integer pageCount);
 
     CustomerDTO findByIdWithSingleQuery(Integer id);
 

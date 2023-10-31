@@ -3,6 +3,9 @@ package com.marktsoft.practice.customer.service;
 import com.marktsoft.practice.customer.CustomerResultExtractor.CustomerResultSetExtractor;
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
 import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
+import com.marktsoft.practice.customer.controller.dto.PageDTO;
+import com.marktsoft.practice.customer.controller.dto.PaginatedCustomerResponseDTO;
+import com.marktsoft.practice.customer.controller.dto.mapper.CustomerRecordNumberMapper;
 import com.marktsoft.practice.payment.dto.PaymentDTO;
 import com.marktsoft.practice.customer.domain.Customer;
 import lombok.AllArgsConstructor;
@@ -44,12 +47,16 @@ public class CustomerServiceImpl implements CustomerService {
                                                 "payment_date from customer c " +
                                                 "join payment p ON c.customer_id=p.customer_id " +
                                                 "where c.customer_id=? ";
+
+    public static final String SQL_TOTAL_RECORDS = "select count(*) from customer";
     public static final String SQL_FIND_CUSTOMER_BY_ID = "Select * from customer where customer_id=?";
     public static final String SQL_FIND_PAYMENT_BY_ID = "Select * from payment where customer_id=?";
 
     private JdbcTemplate jdbcTemplate;
 
     private CustomerResultSetExtractor customerResultSetExtractor;
+
+    private CustomerRecordNumberMapper customerRecordNumberMapper;
 
 
     @Override
@@ -62,12 +69,20 @@ public class CustomerServiceImpl implements CustomerService {
 
     //plusz eredmény: hány elem összesen, melyik az aktuális page?
     @Override
-    public List<CustomerDTO> getAllPaginated(Integer pageNumber, Integer pageCount) {
+    public PaginatedCustomerResponseDTO getAllPaginated(Integer pageNumber, Integer pageCount) {
 
         List<Customer> customerList = jdbcTemplate
                 .query(SQL_CUSTOMER_PAGINATED, customerResultSetExtractor, pageCount, (pageNumber-1)*pageCount);
 
-        return getCustomerDTOList(customerList);
+        Integer totalRecord = jdbcTemplate.queryForObject(SQL_TOTAL_RECORDS, customerRecordNumberMapper);
+
+        Integer totalPages = (totalRecord/pageCount)%10==0 ? totalRecord/pageCount : (totalRecord/pageCount)+1;
+
+        PaginatedCustomerResponseDTO responseDTO = new PaginatedCustomerResponseDTO();
+        responseDTO.setCustomerDTOList(getCustomerDTOList(customerList));
+        responseDTO.setPageDTO(new PageDTO(totalRecord, totalPages, pageNumber));
+
+        return responseDTO;
     }
 
 

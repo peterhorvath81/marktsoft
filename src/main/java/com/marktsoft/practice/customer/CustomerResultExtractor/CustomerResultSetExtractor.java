@@ -24,16 +24,18 @@ public class CustomerResultSetExtractor implements ResultSetExtractor<List<Custo
     public List<Customer> extractData(ResultSet rs) throws SQLException, DataAccessException {
         Map<Integer, Customer> customerMap = new HashMap<>();
 
-        Customer customer;
+        Customer currentCustomer;
 
         while(rs.next()) {
             Integer customerId = rs.getInt("customer_id");
-            customer = customerMap.get(customerId);
-            if (customer == null) {
-                customer = CustomerMapper.mapRow(rs);
-                customerMap.put(customerId, customer);
+            currentCustomer = customerMap.get(customerId);
+            if (currentCustomer == null) {
+                currentCustomer = CustomerMapper.mapRow(rs);
+                customerMap.put(customerId, currentCustomer);
             }
-            customer.getPaymentList().add(PaymentMapper.mapRow(rs));
+            if (PaymentMapper.mapRow(rs).getPaymentId() != null) {
+                currentCustomer.getPaymentList().add(PaymentMapper.mapRow(rs));
+            }
         }
         return customerMap.values().stream().sorted(Comparator.comparing(Customer::getId)).toList();
     }
