@@ -3,7 +3,7 @@ package com.marktsoft.practice.customer.CustomerResultExtractor;
 import com.marktsoft.practice.customer.domain.Customer;
 import com.marktsoft.practice.payment.domain.Payment;
 import com.marktsoft.practice.customer.domain.mapper.CustomerMapper;
-import com.marktsoft.practice.payment.mapper.PaymentMapper;
+import com.marktsoft.practice.payment.domain.mapper.PaymentMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -11,43 +11,30 @@ import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Component
 @AllArgsConstructor
 public class CustomerResultSetExtractor implements ResultSetExtractor<List<Customer>> {
 
-    private CustomerMapper customerMapper;
+    //paymentmapper maprow-ban: usernek nincs paymentje, line 36-ban is
 
-    private PaymentMapper paymentMapper;
     @Override
     public List<Customer> extractData(ResultSet rs) throws SQLException, DataAccessException {
         Map<Integer, Customer> customerMap = new HashMap<>();
 
-        int counter = 1;
         Customer customer;
 
         while(rs.next()) {
             Integer customerId = rs.getInt("customer_id");
             customer = customerMap.get(customerId);
             if (customer == null) {
-                customer = customerMapper.mapRow(rs,counter);
+                customer = CustomerMapper.mapRow(rs);
                 customerMap.put(customerId, customer);
             }
-            List<Payment> paymentList = customer.getPayment();
-            if(paymentList == null) {
-                paymentList = new ArrayList<>();
-                customer.setPayment(paymentList);
-            }
-                Payment payment = paymentMapper.mapRow(rs, counter);
-                paymentList.add(payment);
-
-            counter++;
+            customer.getPaymentList().add(PaymentMapper.mapRow(rs));
         }
-        return customerMap.values().stream().toList();
+        return customerMap.values().stream().sorted(Comparator.comparing(Customer::getId)).toList();
     }
 }

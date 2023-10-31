@@ -1,100 +1,120 @@
 package com.marktsoft.practice.customer.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
-import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
 import com.marktsoft.practice.customer.service.CustomerService;
+import com.marktsoft.practice.payment.dto.PaymentDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@WebMvcTest(CustomerController.class)
+
+@WebMvcTest(CustomerController.class)
 public class CustomerControllerTest {
 
-//    public static final Integer ID = 1;
-//    public static final String FIRST_NAME = "John";
-//    public static final String LAST_NAME = "Doe";
-//    public static final String EMAIL = "johndoe@gmail.com";
-//    public static final String PHONE_NUMBER = "12345";
-//    public static final String SORT_DIRECTION = "ASC";
-//    public static final int PAGE_NUMBER = 1;
-//    public static final int PAGE_COUNT = 1;
-//
-//    @MockBean
-//    private CustomerService customerService;
-//    @Autowired
-//    private MockMvc mockMvc;
-//
-//    @Autowired
-//    private ObjectMapper objectMapper;
-//
-//    @Test
-//    public void shouldGetAllCustomers() throws Exception {
-//        CustomerDTO customerDTO = createCustomerDTO();
-//        when(customerService.getAll()).thenReturn(List.of(customerDTO));
-//
-//        mockMvc.perform(MockMvcRequestBuilders
-//                .get("/customer")
-//                .accept(APPLICATION_JSON)).andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    public void shouldRegisterCustomer() throws Exception {
-//        CustomerDTO customerDTO = createCustomerDTO();
-//        CustomerResponseDTO customerResponseDTO = createCustomerResponseDTO();
-//        when(customerService.create(customerDTO)).thenReturn(customerResponseDTO);
-//
-//        mockMvc.perform(post("/customer").contentType(APPLICATION_JSON)
-//                .content(objectMapper.writeValueAsString(customerDTO)))
-//                .andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    public void shouldUpdateOwner() throws Exception {
-//        CustomerDTO customerDTO = createCustomerDTO();
-//        customerDTO.setFirstName(FIRST_NAME);
-//        customerDTO.setLastName(LAST_NAME);
-//        CustomerResponseDTO customerResponseDTO = createCustomerResponseDTO();
-//        when(customerService.update(ID, customerDTO)).thenReturn(customerResponseDTO);
-//
-//        mockMvc.perform(put("/customer/{id}", ID)
-//                        .contentType(APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(customerDTO)))
-//                .andExpect(status().isOk());
-//    }
-//
-//    @Test
-//    public void shouldDeleteCustomer() throws Exception {
-//        doNothing().when(customerService).delete(ID);
-//
-//        mockMvc.perform(delete("/customer/{id}", ID))
-//                .andExpect(status().isOk());
-//    }
-//
-//    private CustomerDTO createCustomerDTO() {
-//        CustomerDTO customerDTO = new CustomerDTO();
-//        customerDTO.setFirstName(FIRST_NAME);
-//        customerDTO.setLastName(LAST_NAME);
-//        customerDTO.setEmail(EMAIL);
-//        return customerDTO;
-//    }
-//
-//    private CustomerResponseDTO createCustomerResponseDTO() {
-//        CustomerResponseDTO customerResponseDTO = new CustomerResponseDTO();
-//        customerResponseDTO.setId(ID);
-//        customerResponseDTO.setFirstName(FIRST_NAME);
-//        customerResponseDTO.setLastName(LAST_NAME);
-//        customerResponseDTO.setEmail(EMAIL);
-//        return customerResponseDTO;
-//    }
+    public static final int PAGE_NUMBER = 1;
+    public static final int PAGE_COUNT = 1;
+
+    public static final String FIRST_NAME = "John";
+    public static final String LAST_NAME = "Doe";
+    public static final String EMAIL = "johndoe@gmail.com";
+    public static final int PAYMENT_ID = 1;
+    public static final long AMOUNT = 100L;
+    public static final int ID = 1;
+
+    @MockBean
+    private CustomerService customerService;
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Test
+    public void shouldGetAllCustomers() throws Exception {
+        PaymentDTO paymentDTO = createPaymentDTO();
+        CustomerDTO customerDTO = createCustomerDTO(paymentDTO);
+        when(customerService.getAll()).thenReturn(List.of(customerDTO));
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                .get("/customer")
+                .accept(APPLICATION_JSON))
+                .andReturn();
+
+        List<CustomerDTO> actual = getActualResult(result);
+
+        assertEquals(actual.size(),1);
+        assertEquals(actual.get(0).getFirstName(), "John");
+    }
+
+    @Test
+    public void shouldGetAllPaginated() throws Exception {
+        PaymentDTO paymentDTO = createPaymentDTO();
+        CustomerDTO customerDTO = createCustomerDTO(paymentDTO);
+        when(customerService.getAllPaginated(PAGE_NUMBER,PAGE_COUNT)).thenReturn(List.of(customerDTO));
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get("/customer/pages?pageNumber="+PAGE_NUMBER+"&pageCount="+PAGE_COUNT)
+                        .accept(APPLICATION_JSON))
+                .andReturn();
+
+        List<CustomerDTO> actual = getActualResult(result);
+
+        assertEquals(actual.size(),1);
+        assertEquals(actual.get(0).getFirstName(), "John");
+    }
+
+    @Test
+    public void shouldGetCustomerWithSingleQuery() throws Exception {
+        PaymentDTO paymentDTO = createPaymentDTO();
+        CustomerDTO customerDTO = createCustomerDTO(paymentDTO);
+        when(customerService.findByIdWithSingleQuery(ID)).thenReturn(customerDTO);
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get("/customer/"+ID+"/singlequery")
+                        .accept(APPLICATION_JSON))
+                .andReturn();
+
+        CustomerDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(), CustomerDTO.class);
+
+        assertEquals(actual.getFirstName(),"John");
+        assertEquals(actual.getPayments().size(), 1);
+    }
+
+    private PaymentDTO createPaymentDTO() {
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setPaymentId(PAYMENT_ID);
+        paymentDTO.setPayment_date(LocalDate.now());
+        paymentDTO.setAmount(AMOUNT);
+        return paymentDTO;
+    }
+
+    private CustomerDTO createCustomerDTO(PaymentDTO paymentDTO) {
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setFirstName(FIRST_NAME);
+        customerDTO.setLastName(LAST_NAME);
+        customerDTO.setEmail(EMAIL);
+        customerDTO.setPayments(List.of(paymentDTO));
+        return customerDTO;
+    }
+
+    private List<CustomerDTO> getActualResult(MvcResult result) throws JsonProcessingException, UnsupportedEncodingException {
+        return objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<CustomerDTO>>() {
+        });
+    }
 }

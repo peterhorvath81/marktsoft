@@ -4,18 +4,13 @@ import com.marktsoft.practice.customer.CustomerResultExtractor.CustomerResultSet
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
 import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
 import com.marktsoft.practice.payment.dto.PaymentDTO;
-import com.marktsoft.practice.customer.controller.dto.mapper.CustomerResultRowMapper;
-import com.marktsoft.practice.customer.domain.mapper.CustomerMapper;
 import com.marktsoft.practice.customer.domain.Customer;
-import com.marktsoft.practice.payment.domain.Payment;
-import com.marktsoft.practice.payment.mapper.PaymentMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -30,7 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
             "amount, " +
             "payment_date " +
             "from customer c " +
-            "join payment p " +
+            "left join payment p " +
             "ON c.customer_id=p.customer_id";
 
     public static final String SQL_CUSTOMER_PAGINATED = "select c.customer_id," +
@@ -40,10 +35,11 @@ public class CustomerServiceImpl implements CustomerService {
             "payment_id, " +
             "amount, " +
             "payment_date " +
-            "from (select * from customer ORDER BY customer_id ASC LIMIT ? OFFSET ?) " +
+            "from (select * from customer ORDER BY customer_id LIMIT ? OFFSET ?) " +
             "AS c " +
-            "join payment p " +
-            "ON c.customer_id=p.customer_id";
+            "left join payment p " +
+            "ON c.customer_id=p.customer_id " +
+            "ORDER BY c.customer_id";
     public static final String SQL_FIND_BY_ID = "select c.customer_id, first_name, last_name, email, payment_id, amount, " +
                                                 "payment_date from customer c " +
                                                 "join payment p ON c.customer_id=p.customer_id " +
@@ -53,12 +49,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     private JdbcTemplate jdbcTemplate;
 
-    private CustomerMapper customerMapper;
-
-    private PaymentMapper paymentMapper;
-
-    private CustomerResultRowMapper customerResultRowMapper;
-
     private CustomerResultSetExtractor customerResultSetExtractor;
 
 
@@ -67,26 +57,15 @@ public class CustomerServiceImpl implements CustomerService {
 
         List<Customer> customerList = jdbcTemplate.query(SQL_CUSTOMER_SELECT, customerResultSetExtractor);
 
-
         return getCustomerDTOList(customerList);
     }
 
+    //plusz eredmény: hány elem összesen, melyik az aktuális page?
     @Override
     public List<CustomerDTO> getAllPaginated(Integer pageNumber, Integer pageCount) {
 
-        Integer limit = null;
-        Integer offset = null;
-
-        if(pageNumber==1) {
-            offset = 0;
-            limit = pageCount;
-        } else {
-            offset = pageNumber*pageCount;
-            limit = pageCount;
-        }
-
         List<Customer> customerList = jdbcTemplate
-                .query(SQL_CUSTOMER_PAGINATED, customerResultSetExtractor, limit, offset);
+                .query(SQL_CUSTOMER_PAGINATED, customerResultSetExtractor, pageCount, (pageNumber-1)*pageCount);
 
         return getCustomerDTOList(customerList);
     }
@@ -100,33 +79,33 @@ public class CustomerServiceImpl implements CustomerService {
         return getCustomerDTOList(customerList).get(0);
     }
 
-    @Override
-    public CustomerDTO findByIdWithDoubleQuery(Integer id) {
+//    @Override
+//    public CustomerDTO findByIdWithDoubleQuery(Integer id) {
+//
+//        CustomerDTO customerDTO = new CustomerDTO();
+//
+//        Customer customer = jdbcTemplate.queryForObject(SQL_FIND_CUSTOMER_BY_ID, customerMapper, id);
+//
+//        List<Payment> paymentList = jdbcTemplate.query(SQL_FIND_PAYMENT_BY_ID, ps -> ps.setInt(1, id), paymentMapper);
+//
+//        customerDTO.setFirstName(customer.getFirstName());
+//        customerDTO.setLastName(customer.getLastName());
+//        customerDTO.setEmail(customer.getEmail());
+//        customerDTO.setPayments(paymentList.stream().map(payment -> PaymentDTO.builder()
+//                .paymentId(payment.getPaymentId())
+//                .amount(payment.getAmount())
+//                .payment_date(payment.getPayment_date())
+//                .build()).toList());
+//        return customerDTO;
+//    }
 
-        CustomerDTO customerDTO = new CustomerDTO();
-
-        Customer customer = jdbcTemplate.queryForObject(SQL_FIND_CUSTOMER_BY_ID, customerMapper, id);
-
-        List<Payment> paymentList = jdbcTemplate.query(SQL_FIND_PAYMENT_BY_ID, ps -> ps.setInt(1, id), paymentMapper);
-
-        customerDTO.setFirstName(customer.getFirstName());
-        customerDTO.setLastName(customer.getLastName());
-        customerDTO.setEmail(customer.getEmail());
-        customerDTO.setPayments(paymentList.stream().map(payment -> PaymentDTO.builder()
-                .paymentId(payment.getPaymentId())
-                .amount(payment.getAmount())
-                .payment_date(payment.getPayment_date())
-                .build()).toList());
-        return customerDTO;
-    }
-
-    @Override
-    public CustomerResponseDTO create(CustomerDTO customerDTO) {
-        Customer customer = getCustomer(customerDTO);
-        log.info("Saving customer");
-//        customerRepository.save(customer);
-        return getCustomerResponseDTO(customer);
-    }
+//    @Override
+//    public CustomerResponseDTO create(CustomerDTO customerDTO) {
+//        Customer customer = getCustomer(customerDTO);
+//        log.info("Saving customer");
+////        customerRepository.save(customer);
+//        return getCustomerResponseDTO(customer);
+//    }
 
     @Override
     @Transactional
@@ -148,13 +127,6 @@ public class CustomerServiceImpl implements CustomerService {
 //        customerRepository.delete(customer);
     }
 
-
-
-//    @Override
-//    public void updateWithPet(Owner owner, Pet pet) {
-//        owner.getPetList().add(pet);
-//        customerRepository.save(owner);
-//    }
 //
 //    @Override
 //    public Owner findByName(String name) {
@@ -175,7 +147,7 @@ public class CustomerServiceImpl implements CustomerService {
                         .firstName(customer.getFirstName())
                         .lastName(customer.getLastName())
                         .email(customer.getEmail())
-                        .payments(customer.getPayment().stream().map(payment -> {
+                        .payments(customer.getPaymentList().stream().map(payment -> {
                             PaymentDTO paymentDTO = new PaymentDTO();
                             paymentDTO.setPaymentId(payment.getPaymentId());
                             paymentDTO.setAmount(payment.getAmount());
@@ -194,14 +166,14 @@ public class CustomerServiceImpl implements CustomerService {
                 .build();
     }
 
-    private static Customer getCustomer(CustomerDTO customerDTO) {
-        return Customer.builder()
-                .firstName(customerDTO.getFirstName())
-                .lastName(customerDTO.getLastName())
-                .email(customerDTO.getEmail())
-                .activebool(true)
-                .createDate(LocalDate.now())
-                .lastUpdate(LocalDate.now())
-                .build();
-    }
+//    private static Customer getCustomer(CustomerDTO customerDTO) {
+//        return Customer.builder()
+//                .firstName(customerDTO.getFirstName())
+//                .lastName(customerDTO.getLastName())
+//                .email(customerDTO.getEmail())
+//                .activebool(true)
+//                .createDate(LocalDate.now())
+//                .lastUpdate(LocalDate.now())
+//                .build();
+//    }
 }

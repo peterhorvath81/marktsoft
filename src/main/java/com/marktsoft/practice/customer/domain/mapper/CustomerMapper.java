@@ -1,21 +1,20 @@
 package com.marktsoft.practice.customer.domain.mapper;
 
 import com.marktsoft.practice.customer.domain.Customer;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 @Component
-public class CustomerMapper implements RowMapper<Customer> {
-    @Override
-    public Customer mapRow(ResultSet rs, int rowNum) throws SQLException {
-        return Customer.builder()
-                .id(rs.getInt("customer_id"))
-                .firstName(rs.getString("first_name"))
-                .lastName(rs.getString("last_name"))
-                .email(rs.getString("email"))
-                .build();
+public class CustomerMapper {
+
+    public static Customer mapRow(ResultSet rs) throws SQLException {
+        Customer customer = new Customer();
+        customer.setId(rs.getInt("customer_id"));
+        customer.setFirstName(rs.getString("first_name"));
+        customer.setLastName(rs.getString("last_name"));
+        customer.setEmail(rs.getString("email"));
+        return customer;
     }
 }

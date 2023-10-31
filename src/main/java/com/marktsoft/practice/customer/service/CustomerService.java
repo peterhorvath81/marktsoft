@@ -15,16 +15,11 @@ public interface CustomerService {
 
     CustomerDTO findByIdWithSingleQuery(Integer id);
 
-    CustomerDTO findByIdWithDoubleQuery(Integer id);
+//    CustomerDTO findByIdWithDoubleQuery(Integer id);
 
-    CustomerResponseDTO create(CustomerDTO customerDTO);
+//    CustomerResponseDTO create(CustomerDTO customerDTO);
 
     CustomerResponseDTO update(Integer id, CustomerDTO customerDTO);
 
     void delete(Integer id);
-
-
-//    void updateWithPet(Owner owner, Pet pet);
-//
-//    Owner findByName(String name);
 }

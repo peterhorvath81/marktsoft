@@ -3,7 +3,6 @@ package com.marktsoft.practice.customer.controller;
 import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
 import com.marktsoft.practice.customer.service.CustomerService;
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,15 +31,15 @@ public class CustomerController {
         return customerService.findByIdWithSingleQuery(id);
     }
 
-    @GetMapping("/{id}/doublequery")
-    public CustomerDTO findByIdWithTwoQueries(@PathVariable("id") Integer id) {
-        return customerService.findByIdWithDoubleQuery(id);
-    }
+//    @GetMapping("/{id}/doublequery")
+//    public CustomerDTO findByIdWithTwoQueries(@PathVariable("id") Integer id) {
+//        return customerService.findByIdWithDoubleQuery(id);
+//    }
 
-    @PostMapping
-    public CustomerResponseDTO register(@Valid @RequestBody CustomerDTO customerDTO) {
-        return customerService.create(customerDTO);
-    }
+//    @PostMapping
+//    public CustomerResponseDTO register(@Valid @RequestBody CustomerDTO customerDTO) {
+//        return customerService.create(customerDTO);
+//    }
 
     @PutMapping("/{id}")
     public CustomerResponseDTO update(@PathVariable("id") Integer id, @RequestBody CustomerDTO customerDTO) {
