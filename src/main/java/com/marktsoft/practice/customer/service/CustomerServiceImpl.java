@@ -1,10 +1,7 @@
 package com.marktsoft.practice.customer.service;
 
 import com.marktsoft.practice.customer.CustomerResultExtractor.CustomerResultSetExtractor;
-import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
-import com.marktsoft.practice.customer.controller.dto.CustomerResponseDTO;
-import com.marktsoft.practice.customer.controller.dto.PageDTO;
-import com.marktsoft.practice.customer.controller.dto.PaginatedCustomerResponseDTO;
+import com.marktsoft.practice.customer.controller.dto.*;
 import com.marktsoft.practice.customer.controller.dto.mapper.CustomerRecordNumberMapper;
 import com.marktsoft.practice.payment.dto.PaymentDTO;
 import com.marktsoft.practice.customer.domain.Customer;
@@ -67,20 +64,21 @@ public class CustomerServiceImpl implements CustomerService {
         return getCustomerDTOList(customerList);
     }
 
-    //plusz eredmény: hány elem összesen, melyik az aktuális page?
     @Override
-    public PaginatedCustomerResponseDTO getAllPaginated(Integer pageNumber, Integer pageCount) {
+    public PaginatedResponseDTO<CustomerDTO> getAllPaginated(int pageNumber, int pageCount) {
 
         List<Customer> customerList = jdbcTemplate
                 .query(SQL_CUSTOMER_PAGINATED, customerResultSetExtractor, pageCount, (pageNumber-1)*pageCount);
 
-        Integer totalRecord = jdbcTemplate.queryForObject(SQL_TOTAL_RECORDS, customerRecordNumberMapper);
+        int totalRecord = jdbcTemplate.queryForObject(SQL_TOTAL_RECORDS, Integer.class);
 
-        Integer totalPages = (totalRecord/pageCount)%10==0 ? totalRecord/pageCount : (totalRecord/pageCount)+1;
+        int totalPages = totalRecord%pageCount==0 ? totalRecord/pageCount : (totalRecord/pageCount)+1;
 
-        PaginatedCustomerResponseDTO responseDTO = new PaginatedCustomerResponseDTO();
-        responseDTO.setCustomerDTOList(getCustomerDTOList(customerList));
-        responseDTO.setPageDTO(new PageDTO(totalRecord, totalPages, pageNumber));
+        PaginatedResponseDTO<CustomerDTO> responseDTO = new PaginatedResponseDTO<>();
+        responseDTO.setContent(getCustomerDTOList(customerList));
+        responseDTO.setTotalPages(totalPages);
+        responseDTO.setActualPage(pageNumber);
+        responseDTO.setTotalRecord(totalRecord);
 
         return responseDTO;
     }

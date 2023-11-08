@@ -2,6 +2,7 @@ package com.marktsoft.practice.customer.controller;
 
 import com.marktsoft.practice.customer.CustomerResultExtractor.CustomerResultSetExtractor;
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
+import com.marktsoft.practice.customer.controller.dto.PaginatedResponseDTO;
 import com.marktsoft.practice.customer.domain.Customer;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,16 +45,16 @@ public class CustomerControllerDBTest {
 
     @Test
     public void shouldGetAllPaginated() {
-        List<CustomerDTO> customerDTOList = customerController.getAllPaginated(PAGE_NUMBER, PAGE_COUNT);
+        PaginatedResponseDTO<CustomerDTO> responseDTO = customerController.getAllPaginated(PAGE_NUMBER, PAGE_COUNT);
 
         List<Customer> customerList = jdbcTemplate.query(SQL_CUSTOMER_PAGINATED, customerResultSetExtractor, PAGE_COUNT, 0);
 
         assertEquals(customerList.size(), 2);
         assertEquals(customerList.get(0).getPaymentList().size(), 2);
         assertEquals(customerList.get(0).getFirstName(), "John");
-        assertEquals(customerDTOList.size(), 2);
-        assertEquals(customerDTOList.get(0).getPayments().size(), 2);
-        assertEquals(customerDTOList.get(0).getFirstName(), "John");
+        assertEquals(responseDTO.getContent().size(), 2);
+        assertEquals(responseDTO.getTotalPages(), 2);
+        assertEquals(responseDTO.getTotalRecord(), 3);
     }
 
     @Test

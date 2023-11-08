@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marktsoft.practice.customer.controller.dto.CustomerDTO;
+import com.marktsoft.practice.customer.controller.dto.PaginatedResponseDTO;
 import com.marktsoft.practice.customer.service.CustomerService;
 import com.marktsoft.practice.payment.dto.PaymentDTO;
 import org.junit.jupiter.api.Test;
@@ -64,19 +65,19 @@ public class CustomerControllerTest {
 
     @Test
     public void shouldGetAllPaginated() throws Exception {
-//        PaymentDTO paymentDTO = createPaymentDTO();
-//        CustomerDTO customerDTO = createCustomerDTO(paymentDTO);
-//        when(customerService.getAllPaginated(PAGE_NUMBER,PAGE_COUNT)).thenReturn(List.of(customerDTO));
-//
-//        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
-//                        .get("/customer/pages?pageNumber="+PAGE_NUMBER+"&pageCount="+PAGE_COUNT)
-//                        .accept(APPLICATION_JSON))
-//                .andReturn();
-//
-//        List<CustomerDTO> actual = getActualResult(result);
-//
-//        assertEquals(actual.size(),1);
-//        assertEquals(actual.get(0).getFirstName(), "John");
+        PaymentDTO paymentDTO = createPaymentDTO();
+        CustomerDTO customerDTO = createCustomerDTO(paymentDTO);
+        PaginatedResponseDTO<CustomerDTO> responseDTO = createPaginatedCustomerResponseDTO(customerDTO);
+        when(customerService.getAllPaginated(PAGE_NUMBER,PAGE_COUNT)).thenReturn(responseDTO);
+
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .get("/customer/pages?pageNumber="+PAGE_NUMBER+"&pageCount="+PAGE_COUNT)
+                        .accept(APPLICATION_JSON))
+                .andReturn();
+
+        PaginatedResponseDTO actual = objectMapper.readValue(result.getResponse().getContentAsString(), PaginatedResponseDTO.class);
+
+        assertEquals(actual.getContent().size(),1);
     }
 
     @Test
@@ -116,5 +117,14 @@ public class CustomerControllerTest {
     private List<CustomerDTO> getActualResult(MvcResult result) throws JsonProcessingException, UnsupportedEncodingException {
         return objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<CustomerDTO>>() {
         });
+    }
+
+    private PaginatedResponseDTO<CustomerDTO> createPaginatedCustomerResponseDTO(CustomerDTO customerDTO) {
+        PaginatedResponseDTO<CustomerDTO> responseDTO = new PaginatedResponseDTO<>();
+        responseDTO.setContent(List.of(customerDTO));
+        responseDTO.setActualPage(1);
+        responseDTO.setTotalRecord(5);
+        responseDTO.setTotalPages(2);
+        return responseDTO;
     }
 }

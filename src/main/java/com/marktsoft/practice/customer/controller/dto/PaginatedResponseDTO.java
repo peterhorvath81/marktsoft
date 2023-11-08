@@ -1,11 +1,13 @@
 package com.marktsoft.practice.customer.controller.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-@AllArgsConstructor
-public class PageDTO {
+public class PaginatedResponseDTO<T> {
+
+    private List<T> content;
 
     private Integer totalRecord;
 
