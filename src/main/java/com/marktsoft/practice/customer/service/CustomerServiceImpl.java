@@ -59,7 +59,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<CustomerDTO> getAll() {
 
-        List<Customer> customerList = jdbcTemplate.query(SQL_CUSTOMER_SELECT, customerResultSetExtractor);
+        List<Customer> customerList = jdbcTemplate.query(SQL_CUSTOMER_SELECT, rs -> {
+            return CustomerResultSetExtractor.extractData(rs);
+        });
 
         return getCustomerDTOList(customerList);
     }
@@ -68,7 +70,9 @@ public class CustomerServiceImpl implements CustomerService {
     public PaginatedResponseDTO<CustomerDTO> getAllPaginated(int pageNumber, int pageCount) {
 
         List<Customer> customerList = jdbcTemplate
-                .query(SQL_CUSTOMER_PAGINATED, customerResultSetExtractor, pageCount, (pageNumber-1)*pageCount);
+                .query(SQL_CUSTOMER_PAGINATED, rs -> {
+                    return CustomerResultSetExtractor.extractData(rs);
+                }, pageCount, (pageNumber-1)*pageCount);
 
         int totalRecord = jdbcTemplate.queryForObject(SQL_TOTAL_RECORDS, Integer.class);
 
@@ -87,7 +91,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerDTO findByIdWithSingleQuery(Integer id) {
 
-        List<Customer> customerList = jdbcTemplate.query(SQL_FIND_BY_ID, customerResultSetExtractor, id);
+        List<Customer> customerList = jdbcTemplate.query(SQL_FIND_BY_ID, rs -> {
+            return CustomerResultSetExtractor.extractData(rs);
+        }, id);
 
         return getCustomerDTOList(customerList).get(0);
     }

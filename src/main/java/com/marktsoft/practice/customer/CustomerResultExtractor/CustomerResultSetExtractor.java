@@ -14,10 +14,9 @@ import java.util.*;
 
 
 @Component
-public class CustomerResultSetExtractor implements ResultSetExtractor<List<Customer>> {
+public class CustomerResultSetExtractor {
 
-    @Override
-    public List<Customer> extractData(ResultSet rs) throws SQLException, DataAccessException {
+    public static List<Customer> extractData(ResultSet rs) throws SQLException, DataAccessException {
         Map<Integer, Customer> customerMap = new HashMap<>();
 
 
@@ -27,29 +26,10 @@ public class CustomerResultSetExtractor implements ResultSetExtractor<List<Custo
 
             if (customerMap.get(customerId) == null) {
 
-                CustomerMapper c = () -> {
-                    currentCustomer.setId(rs.getInt("customer_id"));
-                    currentCustomer.setFirstName(rs.getString("first_name"));
-                    currentCustomer.setLastName(rs.getString("last_name"));
-                    currentCustomer.setEmail(rs.getString("email"));
-                    
-                    return currentCustomer;
-                };
-                PaymentMapper p = () -> {
-                    Payment payment = new Payment();
-
-                    payment.setPaymentId(rs.getInt("payment_id"));
-                    payment.setAmount(rs.getLong("amount"));
-                    payment.setPayment_date(rs.getDate("payment_date").toLocalDate());
-
-                    return payment;
-                };
-
-                if (p.mapRow().getPaymentId() != null) {
-                    currentCustomer.getPaymentList().add(p.mapRow());
+                currentCustomer = CustomerMapper.mapRow(rs);
+                if (PaymentMapper.mapRow(rs).getPaymentId() != null) {
+                    currentCustomer.getPaymentList().add(PaymentMapper.mapRow(rs));
                 }
-
-                c.mapRow();
 
                 customerMap.put(customerId, currentCustomer);
             }
