@@ -53,13 +53,7 @@ public class CustomerResultSetExtractor implements ResultSetExtractor<List<Custo
 
                 customerMap.put(customerId, currentCustomer);
             }
-
-
-
         }
-
-
-
         return customerMap.values().stream().sorted(Comparator.comparing(Customer::getId)).toList();
     }
 }
